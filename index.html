@@ -1016,7 +1016,7 @@
     <div class="login-title">Fabien Gonidec<br>&amp; Cécile Henson</div>
     <div class="login-subtitle">Liste de naissance</div>
     <div class="login-divider"></div>
-    <div class="login-label">Mot de passe famille</div>
+    <div class="login-label">Mot de passe Famille &amp; Amis</div>
     <input type="password" class="login-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
     <button class="login-btn" onclick="handleLogin()">Accéder à la liste</button>
     <div class="login-error" id="login-error">Mot de passe incorrect</div>
@@ -1176,7 +1176,7 @@
         <div class="params-section">
           <h3>Accès</h3>
           <div class="form-group">
-            <label class="form-label">Mot de passe famille</label>
+            <label class="form-label">Mot de passe Famille &amp; Amis</label>
             <input class="form-input" id="param-pwd-famille" type="password">
           </div>
           <div class="form-group">
@@ -1383,69 +1383,137 @@
 <!-- ============================================================ -->
 <!-- JAVASCRIPT -->
 <!-- ============================================================ -->
-<script>
+<script type="module">
 // ============================================================
-// DATA STORE
+// FIREBASE REALTIME DATABASE — LISTE DE NAISSANCE
 // ============================================================
-const DB = {
-  params: {
-    pwd_famille: 'bebe2025',
-    pwd_admin: 'admin2025',
-    titulaire: 'Fabien Gonidec',
-    iban: 'FR76 3000 6000 0112 3456 7890 189',
-    bic: 'BNPAFRPPXXX',
-    msg_confirmation: 'Merci beaucoup pour la participation, à très bientôt ❤️',
-    taux: 0.52
-  },
-  articles: [
-    { id: 1, categorie: 'Vêtements', nom: 'Body manches longues Petit Bateau', description: 'Body en coton bio, manches longues, imprimé rayures marines. Taille 3 mois.', prix: 35, devise: 'EUR', montant_finance: 20, photo_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=400&h=300&fit=crop&auto=format', product_url: 'https://www.petit-bateau.fr', statut: 'Participation en cours', pays: 'FR', pending: false, buttonsEnabled: false },
-    { id: 2, categorie: 'Vêtements', nom: 'Pack 5 pyjamas Vertbaudet', description: 'Lot de 5 pyjamas velours doux, fermeture pressions, motifs animaux. Taille naissance.', prix: 65, devise: 'EUR', montant_finance: 65, photo_url: 'https://images.unsplash.com/photo-1594483173041-6b1e35bb2e2c?w=400&h=300&fit=crop&auto=format', product_url: 'https://www.vertbaudet.fr', statut: 'Financé', pays: 'FR', pending: false, buttonsEnabled: false },
-    { id: 3, categorie: 'Mobilier', nom: 'Lit évolutif en bois naturel', description: 'Lit bébé évolutif 60×120 cm, bois de hêtre massif certifié FSC. S\'adapte jusqu\'à 5 ans.', prix: 320, devise: 'EUR', montant_finance: 180, photo_url: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Participation en cours', pays: 'FR', pending: false, buttonsEnabled: false },
-    { id: 4, categorie: 'Transport', nom: 'Poussette combinée Bugaboo Fox', description: 'Système de voyage complet, nacelle + siège auto, compatible avec notre voiture.', prix: 1200, devise: 'NZD', montant_finance: 0, photo_url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=300&fit=crop&auto=format', product_url: 'https://www.bugaboo.com', statut: 'Disponible', pays: 'NZ', pending: false, buttonsEnabled: true },
-    { id: 5, categorie: 'Transport', nom: 'Siège auto Nuna Rava', description: 'Siège auto pivotant groupe 0+/1/2, homologué R129, installation Isofix.', prix: 680, devise: 'NZD', montant_finance: 250, photo_url: 'https://images.unsplash.com/photo-1449247709967-d4461a6a6103?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Participation en cours', pays: 'NZ', pending: false, buttonsEnabled: true },
-    { id: 6, categorie: 'Jouets', nom: 'Tapis d\'éveil musical Lamaze', description: 'Tapis d\'éveil avec arche de jeu, 5 jouets suspendus, sons et lumières. Stimulation sensorielle.', prix: 79, devise: 'EUR', montant_finance: 0, photo_url: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Disponible', pays: 'FR', pending: false, buttonsEnabled: false },
-    { id: 7, categorie: 'Jouets', nom: 'Mobile musical bois Selecta', description: 'Mobile en bois naturel, 5 personnages tissu, mélodie douce. Fixation universelle.', prix: 55, devise: 'EUR', montant_finance: 0, photo_url: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Réservé', pays: 'FR', pending: false, buttonsEnabled: false },
-    { id: 8, categorie: 'Autres', nom: 'Baignoire bébé + table à langer', description: 'Baignoire ergonomique avec réducteur + table à langer pliable. Couleur nude.', prix: 140, devise: 'EUR', montant_finance: 140, photo_url: 'https://images.unsplash.com/photo-1607582486367-7e75cc04ad75?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Commandé', pays: 'FR', pending: false, buttonsEnabled: false },
-    { id: 9, categorie: 'Mobilier', nom: 'Fauteuil d\'allaitement gris', description: 'Fauteuil relax pivotant 360°, rembourrage haute densité, repose-pieds intégré. Parfait pour les nuits.', prix: 390, devise: 'NZD', montant_finance: 390, photo_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Reçu', pays: 'NZ', pending: false, buttonsEnabled: true }
-  ],
-  contributions: [
-    { id: 1, article_id: 1, participant_id: 1, montant: 15, statut: 'VIREMENT_CONFIRME', date: '2025-02-15' },
-    { id: 2, article_id: 1, participant_id: 2, montant: 5, statut: 'VIREMENT_ANNONCE', date: '2025-02-18' },
-    { id: 3, article_id: 2, participant_id: 3, montant: 65, statut: 'VIREMENT_CONFIRME', date: '2025-02-10' },
-    { id: 4, article_id: 3, participant_id: 4, montant: 100, statut: 'VIREMENT_CONFIRME', date: '2025-02-20' },
-    { id: 5, article_id: 3, participant_id: 1, montant: 80, statut: 'VIREMENT_ANNONCE', date: '2025-02-22' },
-    { id: 6, article_id: 5, participant_id: 2, montant: 250, statut: 'VIREMENT_CONFIRME', date: '2025-02-12' }
-  ],
-  participants: [
-    { id: 1, nom_prenom: 'Sophie Martin', email: 'sophie@example.com', message: '' },
-    { id: 2, nom_prenom: 'Thomas et Julie Durand', email: '', message: 'Plein d\'amour pour vous trois !' },
-    { id: 3, nom_prenom: 'Famille Lefebvre', email: '', message: 'Quelle joie d\'apprendre la nouvelle !' },
-    { id: 4, nom_prenom: 'Marie-Claire Bonnet', email: '', message: '' }
-  ],
-  messages: [
-    { id: 1, participant_id: 2, texte: 'Plein d\'amour pour vous trois ! On est tellement impatients de rencontrer le petit bout.', date: '2025-02-18', remercie: true, public: true },
-    { id: 2, participant_id: 3, texte: 'Quelle joie d\'apprendre la nouvelle ! Toutes nos félicitations, on pense fort à vous depuis la France.', date: '2025-02-10', remercie: true, public: true },
-    { id: 3, participant_id: 1, texte: 'Félicitations ! Ce bébé a de la chance d\'avoir des parents aussi merveilleux. Gros bisous de Bordeaux.', date: '2025-02-21', remercie: false, public: true }
-  ],
-  activity: [
-    { type: 'participation', texte: '<strong>Sophie Martin</strong> a participé à «Body manches longues Petit Bateau»', time: 'Il y a 2 heures' },
-    { type: 'virement', texte: '<strong>Thomas et Julie Durand</strong> ont déclaré un virement pour «Body manches longues»', time: 'Il y a 5 heures' },
-    { type: 'reservation', texte: '<strong>Famille Bernard</strong> a réservé «Mobile musical bois Selecta»', time: 'Hier' },
-    { type: 'proposition', texte: '<strong>Marine Dupuis</strong> a proposé un nouvel article', time: 'Il y a 2 jours' }
-  ]
+// HOW IT WORKS:
+// All data lives in Firebase Realtime Database (free tier).
+// Every write pushes to Firebase; onValue() listeners stream
+// changes to every browser in real-time — no page refresh needed.
+// ============================================================
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase, ref, set, push, update, remove, onValue, get }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+// ── YOUR FIREBASE CONFIG ──────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyDSOHeQfEkIvnt3Co_IajRWaPLMb-yp4-E",
+  authDomain:        "liste-naissance-81f63.firebaseapp.com",
+  databaseURL:       "https://liste-naissance-81f63-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:         "liste-naissance-81f63",
+  storageBucket:     "liste-naissance-81f63.firebasestorage.app",
+  messagingSenderId: "631441998644",
+  appId:             "1:631441998644:web:6367ee8e3a947919515b61"
+};
+// ─────────────────────────────────────────────────────────────
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// Refs
+const R = {
+  params:        ref(db, 'params'),
+  articles:      ref(db, 'articles'),
+  contributions: ref(db, 'contributions'),
+  participants:  ref(db, 'participants'),
+  messages:      ref(db, 'messages'),
+  activity:      ref(db, 'activity'),
 };
 
 // ============================================================
-// STATE
+// IN-MEMORY CACHE  (kept in sync by real-time listeners)
 // ============================================================
+let DB = {
+  params: {
+    pwd_famille: 'bebe2026',
+    pwd_admin: 'admin2026',
+    titulaire: 'Fabien Gonidec',
+    iban: '',
+    bic: '',
+    msg_confirmation: 'Merci beaucoup pour votre participation, à très bientôt ❤️',
+    taux: 0.52
+  },
+  articles:      {},
+  contributions: {},
+  participants:  {},
+  messages:      {},
+  activity:      {}
+};
+
+// Which screen is visible
+let currentScreen = 'login';
 let currentCat = 'Tous';
 let participateState = {};
-let msgVisibility = 'public'; // 'public' or 'private'
+let msgVisibility = 'public';
 
-function setMsgVisibility(v) {
-  msgVisibility = v;
-  document.getElementById('msg-vis-public').classList.toggle('selected', v === 'public');
-  document.getElementById('msg-vis-private').classList.toggle('selected', v === 'private');
+// ============================================================
+// BOOTSTRAP — seed params if first run
+// ============================================================
+get(R.params).then(snap => {
+  if (!snap.exists()) {
+    set(R.params, DB.params);
+  }
+});
+
+// ============================================================
+// REAL-TIME LISTENERS
+// All 6 collections update the cache and re-render.
+// ============================================================
+function listenAll() {
+  onValue(R.params, snap => {
+    if (snap.exists()) DB.params = snap.val();
+  });
+
+  onValue(R.articles, snap => {
+    DB.articles = snap.exists() ? snap.val() : {};
+    if (currentScreen === 'app') refreshApp();
+    if (currentScreen === 'admin') { renderAdminArticles(); renderAdminStats(); renderCategoryNav(); }
+  });
+
+  onValue(R.contributions, snap => {
+    DB.contributions = snap.exists() ? snap.val() : {};
+    if (currentScreen === 'app') refreshApp();
+    if (currentScreen === 'admin') { renderAdminContribs(); renderAdminStats(); }
+  });
+
+  onValue(R.participants, snap => {
+    DB.participants = snap.exists() ? snap.val() : {};
+    if (currentScreen === 'admin') { renderAdminContribs(); renderAdminMessages(); }
+  });
+
+  onValue(R.messages, snap => {
+    DB.messages = snap.exists() ? snap.val() : {};
+    if (currentScreen === 'app') renderMessages();
+    if (currentScreen === 'admin') renderAdminMessages();
+  });
+
+  onValue(R.activity, snap => {
+    DB.activity = snap.exists() ? snap.val() : {};
+    if (currentScreen === 'admin') renderAdminActivity();
+  });
+}
+
+// Start listening immediately so data is ready before login
+listenAll();
+
+// ============================================================
+// HELPERS — convert Firebase object to sorted array
+// ============================================================
+function objToArr(obj) {
+  if (!obj) return [];
+  return Object.entries(obj).map(([fbKey, val]) => ({ ...val, _fbKey: fbKey }));
+}
+
+function articlesArr()      { return objToArr(DB.articles); }
+function contributionsArr() { return objToArr(DB.contributions).sort((a,b) => (b.date||'').localeCompare(a.date||'')); }
+function participantsArr()  { return objToArr(DB.participants); }
+function messagesArr()      { return objToArr(DB.messages).sort((a,b) => (b.date||'').localeCompare(a.date||'')); }
+function activityArr()      { return objToArr(DB.activity).sort((a,b) => (b.ts||0) - (a.ts||0)); }
+
+function findParticipantByName(nom) {
+  return participantsArr().find(p => p.nom_prenom.toLowerCase() === nom.toLowerCase());
 }
 
 // ============================================================
@@ -1454,9 +1522,11 @@ function setMsgVisibility(v) {
 function handleLogin() {
   const val = document.getElementById('login-password').value;
   if (val === DB.params.pwd_famille) {
+    currentScreen = 'app';
     showScreen('screen-app');
     initApp();
   } else if (val === DB.params.pwd_admin) {
+    currentScreen = 'admin';
     showScreen('screen-admin');
     initAdmin();
   } else {
@@ -1467,14 +1537,14 @@ function handleLogin() {
 }
 
 function showAdminLogin() {
-  // Just allow admin password directly in same field
-  const lbl = document.querySelector('.login-label');
-  lbl.textContent = 'Mot de passe administrateur';
+  document.querySelector('.login-label').textContent = 'Mot de passe administrateur';
 }
 
 document.getElementById('login-password').addEventListener('keydown', e => {
   if (e.key === 'Enter') handleLogin();
 });
+window.handleLogin = handleLogin;
+window.showAdminLogin = showAdminLogin;
 
 // ============================================================
 // SCREENS
@@ -1487,14 +1557,15 @@ function showScreen(id) {
   const el = document.getElementById(id);
   el.style.display = (id === 'screen-login') ? 'flex' : 'block';
   el.classList.add('active');
-  // Scroll to top of page so the newly revealed screen is visible
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goBack() {
+  currentScreen = 'login';
   showScreen('screen-login');
   document.getElementById('login-password').value = '';
 }
+window.goBack = goBack;
 
 // ============================================================
 // APP INIT
@@ -1510,10 +1581,11 @@ function initApp() {
 // CATEGORY NAV
 // ============================================================
 function renderCategoryNav() {
+  const arts = articlesArr();
   const cats = ['Tous', 'Vêtements', 'Mobilier', 'Transport', 'Jouets', 'Autres'];
   const nav = document.getElementById('cat-nav');
   nav.innerHTML = cats.map(cat => {
-    const count = cat === 'Tous' ? DB.articles.length : DB.articles.filter(a => a.categorie === cat).length;
+    const count = cat === 'Tous' ? arts.length : arts.filter(a => a.categorie === cat).length;
     return `<button class="cat-btn ${cat === currentCat ? 'active' : ''}" onclick="filterCat('${cat}')">
       ${cat} <span class="cat-count">${count}</span>
     </button>`;
@@ -1525,19 +1597,20 @@ function filterCat(cat) {
   renderCategoryNav();
   renderArticles();
 }
+window.filterCat = filterCat;
 
 // ============================================================
 // SUMMARY
 // ============================================================
 function renderSummary() {
-  const total = DB.articles.filter(a => !a.pending).length;
-  const finances = DB.articles.filter(a => a.statut === 'Financé').length;
-  const reserves = DB.articles.filter(a => a.statut === 'Réservé').length;
-  const disponibles = DB.articles.filter(a => ['Disponible', 'Participation en cours'].includes(a.statut)).length;
+  const arts = articlesArr().filter(a => !a.pending);
+  const finances   = arts.filter(a => a.statut === 'Financé').length;
+  const reserves   = arts.filter(a => a.statut === 'Réservé').length;
+  const disponibles = arts.filter(a => ['Disponible','Participation en cours'].includes(a.statut)).length;
   document.getElementById('summary-bar').innerHTML = `
     <div class="summary-card">
       <div class="summary-label">Articles sur la liste</div>
-      <div class="summary-value">${total}</div>
+      <div class="summary-value">${arts.length}</div>
     </div>
     <div class="summary-card">
       <div class="summary-label">Articles financés</div>
@@ -1558,7 +1631,8 @@ function renderSummary() {
 // ARTICLES
 // ============================================================
 function renderArticles() {
-  const filtered = currentCat === 'Tous' ? DB.articles : DB.articles.filter(a => a.categorie === currentCat);
+  const arts = articlesArr();
+  const filtered = currentCat === 'Tous' ? arts : arts.filter(a => a.categorie === currentCat);
   const container = document.getElementById('articles-container');
   if (!filtered.length) {
     container.innerHTML = '<div class="empty-state"><p>Aucun article dans cette catégorie.</p></div>';
@@ -1568,162 +1642,134 @@ function renderArticles() {
 }
 
 function articleCard(a) {
-  const pct = a.prix > 0 ? Math.min(100, Math.round((a.montant_finance / a.prix) * 100)) : 0;
-  const restant = Math.max(0, a.prix - a.montant_finance);
-  const isNZ = a.pays === 'NZ';
-  const priceEur = isNZ ? Math.round(a.prix * DB.params.taux) : null;
+  const pct     = a.prix > 0 ? Math.min(100, Math.round(((a.montant_finance||0) / a.prix) * 100)) : 0;
+  const restant = Math.max(0, a.prix - (a.montant_finance||0));
+  const isNZ    = a.pays === 'NZ';
+  const priceEur = isNZ ? Math.round(a.prix * (DB.params.taux||0.52)) : null;
 
-  // Blocked statuses: fully finished items — greyed out, no actions
-  const blocked = ['Financé', 'Réservé', 'Commandé', 'Reçu'].includes(a.statut);
+  const hardBlocked = ['Réservé','Commandé','Reçu'].includes(a.statut);
+  const fullyFunded = a.statut === 'Financé' || restant <= 0;
 
   const badgeClass = {
-    'Disponible': 'badge-disponible',
-    'Participation en cours': 'badge-en-cours',
-    'Financé': 'badge-finance',
-    'Réservé': 'badge-reserve',
-    'Commandé': 'badge-commande',
-    'Reçu': 'badge-recu'
+    'Disponible':           'badge-disponible',
+    'Participation en cours':'badge-en-cours',
+    'Financé':              'badge-finance',
+    'Réservé':              'badge-reserve',
+    'Commandé':             'badge-commande',
+    'Reçu':                 'badge-recu'
   }[a.statut] || 'badge-disponible';
 
-  // Progress bar: always shown when there is a price (for all articles with participation possible or already funded)
   const showProgress = a.prix > 0 && !a.pending;
   const progressSection = showProgress ? `
     <div class="progress-wrap">
       <div class="progress-info">
-        <span><strong>${a.montant_finance} ${a.devise}</strong> / ${a.prix} ${a.devise}</span>
+        <span><strong>${a.montant_finance||0} ${a.devise}</strong> / ${a.prix} ${a.devise}</span>
         <span>${pct}%</span>
       </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" style="width:${pct}%"></div>
       </div>
-    </div>
-  ` : '';
-
-  // FIX 1: Never show participant names on family view
-  // (contributor pills removed entirely from family view)
+    </div>` : '';
 
   const actions = (() => {
-    // Pending proposals: no action buttons
-    if (a.pending) {
-      return `<span class="btn btn-outline" style="cursor:default;opacity:0.7;font-size:11px;">⏳ En attente de confirmation</span>`;
-    }
-    // Blocked statuses: greyed out status label only, no buttons
-    if (blocked) {
-      const label = { 'Financé': 'Financé ✓', 'Réservé': 'Réservé', 'Commandé': 'Commandé', 'Reçu': 'Reçu ✓' }[a.statut] || a.statut;
-      return `<span class="btn btn-outline" style="cursor:default;opacity:0.6;font-size:11px;">${label}</span>`;
-    }
-    if (isNZ) {
-      // NZ: always show Participer + Acheter entièrement (buttons controlled by buttonsEnabled which defaults true for NZ)
-      const hasLink = a.product_url && a.product_url !== '#';
-      return `
-        <button class="btn btn-primary" onclick="openParticipate(${a.id}, false)">Participer</button>
-        <button class="btn btn-gold" onclick="openParticipate(${a.id}, true)">Acheter entièrement</button>
-        ${hasLink ? `<a href="${a.product_url}" target="_blank" class="btn btn-outline">Voir le produit</a>` : ''}
-      `;
-    }
-    // FIX 4: FR items — buttons ONLY if explicitly enabled by admin (buttonsEnabled), never automatic from statut
-    if (a.buttonsEnabled) {
-      const hasLink = a.product_url && a.product_url !== '#';
-      return `
-        <button class="btn btn-primary" onclick="openParticipate(${a.id}, false)">Participer</button>
-        ${restant > 0 ? `<button class="btn btn-gold" onclick="openParticipate(${a.id}, true)">Acheter entièrement</button>` : ''}
-        ${hasLink ? `<a href="${a.product_url}" target="_blank" class="btn btn-outline">Voir le produit</a>` : ''}
-      `;
-    }
-    // FR without buttons: product link only if available
+    if (a.pending) return `<span class="btn btn-outline" style="cursor:default;opacity:0.7;font-size:11px;">⏳ En attente de confirmation</span>`;
+    if (hardBlocked) return `<span class="btn btn-outline" style="cursor:default;opacity:0.6;font-size:11px;">${a.statut}</span>`;
+    if (fullyFunded)  return `<span class="btn btn-outline" style="cursor:default;opacity:0.6;font-size:11px;">Financé ✓</span>`;
     const hasLink = a.product_url && a.product_url !== '#';
+    if (isNZ || a.buttonsEnabled) {
+      return `
+        <button class="btn btn-primary" onclick="openParticipate('${a._fbKey}', false)">Participer</button>
+        <button class="btn btn-gold"    onclick="openParticipate('${a._fbKey}', true)">Acheter entièrement</button>
+        ${hasLink ? `<a href="${a.product_url}" target="_blank" class="btn btn-outline">Voir le produit</a>` : ''}
+      `;
+    }
     return hasLink ? `<a href="${a.product_url}" target="_blank" class="btn btn-outline">Voir le produit</a>` : '';
   })();
 
-  // FIX 2: card classes — inactive for blocked/finished items, active-card for interactive ones
-  const isInactive = blocked || a.pending;
-  const cardClass = [
-    'article-card',
-    isInactive ? 'inactive' : 'active-card',
-    isNZ ? 'nz-only' : ''
-  ].filter(Boolean).join(' ');
+  const isInactive = hardBlocked || fullyFunded || a.pending;
+  const cardClass  = ['article-card', isInactive ? 'inactive' : 'active-card', isNZ ? 'nz-only' : ''].filter(Boolean).join(' ');
 
   return `
     <div class="${cardClass}">
       <div class="article-img-wrap">
         ${isNZ ? '<span class="badge-nz">NZ</span>' : ''}
         <span class="article-badge ${badgeClass}">${a.statut}</span>
-        <img src="${a.photo_url}" alt="${a.nom}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'img-placeholder\\'>🧸</div>'" style="pointer-events:none;">
+        ${a.photo_url ? `<img src="${a.photo_url}" alt="${a.nom}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'img-placeholder\\'>🧸</div>'" style="pointer-events:none;">` : '<div class="img-placeholder">🧸</div>'}
       </div>
       <div class="article-body">
         <div class="article-cat">${a.categorie}</div>
         <div class="article-name">${a.nom}</div>
-        <div class="article-desc">${a.description}</div>
+        <div class="article-desc">${a.description||''}</div>
         <div class="article-price-row">
-          <span class="article-price">${a.prix.toLocaleString('fr-FR')} ${a.devise}</span>
+          <span class="article-price">${(a.prix||0).toLocaleString('fr-FR')} ${a.devise}</span>
           ${isNZ && priceEur ? `<span class="article-price-nz">≈ ${priceEur.toLocaleString('fr-FR')} EUR</span>` : ''}
         </div>
         ${progressSection}
         <div class="article-actions">${actions}</div>
       </div>
-    </div>
-  `;
-}
-
-function getContributors(articleId) {
-  return DB.contributions
-    .filter(c => c.article_id === articleId && c.statut === 'VIREMENT_CONFIRME')
-    .map(c => {
-      if (c.nameVisible === false) return 'Anonyme';
-      const p = DB.participants.find(p => p.id === c.participant_id);
-      return p ? p.nom_prenom : 'Anonyme';
-    });
+    </div>`;
 }
 
 // ============================================================
-// MESSAGES
+// MESSAGES (family view — public only)
 // ============================================================
 function renderMessages() {
   const list = document.getElementById('messages-list');
-  // Family view: only show public messages
-  const publicMsgs = DB.messages.filter(m => m.public !== false);
-  if (!publicMsgs.length) {
+  const msgs = messagesArr().filter(m => m.public !== false);
+  if (!msgs.length) {
     list.innerHTML = '<div class="empty-state"><p>Aucun message pour l\'instant.</p></div>';
     return;
   }
-  list.innerHTML = publicMsgs.map(m => {
-    const p = DB.participants.find(p => p.id === m.participant_id);
+  list.innerHTML = msgs.map(m => {
+    const p    = participantsArr().find(p => p._fbKey === m.participant_id);
     const name = p ? p.nom_prenom : 'Anonyme';
-    const d = new Date(m.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const d    = new Date(m.date).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
     return `
       <div class="message-card">
         <div class="message-author">${name}</div>
         <div class="message-text">${m.texte}</div>
         <div class="message-date">${d}</div>
-      </div>
-    `;
+      </div>`;
   }).join('');
+}
+
+function refreshApp() {
+  renderSummary();
+  renderArticles();
+  renderMessages();
+  renderCategoryNav();
 }
 
 // ============================================================
 // PARTICIPATION FLOW
 // ============================================================
-function openParticipate(articleId, buyAll) {
-  const a = DB.articles.find(x => x.id === articleId);
+function openParticipate(fbKey, buyAll) {
+  const a = { ...DB.articles[fbKey], _fbKey: fbKey };
   if (!a) return;
-  participateState = { articleId, buyAll, step: 1, nom: '', montant: buyAll ? a.prix - a.montant_finance : 0, wantMessage: null, message: '', nameVisible: true, messageVisible: true };
+  const restant = Math.max(0, a.prix - (a.montant_finance||0));
+  participateState = {
+    articleFbKey: fbKey, buyAll, step: 1,
+    nom: '', montant: buyAll ? restant : 0,
+    wantMessage: null, message: '',
+    nameVisible: true, messageVisible: true
+  };
   renderParticipateStep();
   openModal('modal-participate');
 }
+window.openParticipate = openParticipate;
 
 function renderParticipateStep() {
-  const a = DB.articles.find(x => x.id === participateState.articleId);
-  const totalSteps = 6;
-  const s = participateState.step;
+  const a       = { ...DB.articles[participateState.articleFbKey], _fbKey: participateState.articleFbKey };
+  const totalSteps = 5;
+  const s       = participateState.step;
+  const restant = Math.max(0, a.prix - (a.montant_finance||0));
 
-  // Steps indicator
   document.getElementById('participate-steps').innerHTML =
-    Array.from({ length: totalSteps }, (_, i) =>
-      `<div class="step-dot ${i + 1 < s ? 'done' : i + 1 === s ? 'active' : ''}"></div>`
+    Array.from({length: totalSteps}, (_,i) =>
+      `<div class="step-dot ${i+1 < s ? 'done' : i+1 === s ? 'active' : ''}"></div>`
     ).join('');
 
   const content = document.getElementById('participate-content');
-  const restant = Math.max(0, a.prix - a.montant_finance);
 
   if (s === 1) {
     content.innerHTML = `
@@ -1737,73 +1783,61 @@ function renderParticipateStep() {
       <div class="form-group">
         <label class="form-label">Visibilité de votre nom</label>
         <div class="choice-group">
-          <button class="choice-btn ${participateState.nameVisible ? 'selected' : ''}" onclick="participateState.nameVisible=true;document.querySelector('#pnv-public').classList.add('selected');document.querySelector('#pnv-private').classList.remove('selected');" id="pnv-public">👤 Visible sur la liste</button>
-          <button class="choice-btn ${!participateState.nameVisible ? 'selected' : ''}" onclick="participateState.nameVisible=false;document.querySelector('#pnv-private').classList.add('selected');document.querySelector('#pnv-public').classList.remove('selected');" id="pnv-private">🔒 Anonyme</button>
+          <button class="choice-btn ${participateState.nameVisible ? 'selected' : ''}" id="pnv-public"
+            onclick="participateState.nameVisible=true;document.getElementById('pnv-public').classList.add('selected');document.getElementById('pnv-private').classList.remove('selected');">👤 Visible sur la liste</button>
+          <button class="choice-btn ${!participateState.nameVisible ? 'selected' : ''}" id="pnv-private"
+            onclick="participateState.nameVisible=false;document.getElementById('pnv-private').classList.add('selected');document.getElementById('pnv-public').classList.remove('selected');">🔒 Anonyme</button>
         </div>
-        <div class="form-hint" style="margin-top:0.4rem;">Si anonyme, votre nom n'apparaîtra pas sur la liste publique.</div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('modal-participate')">Annuler</button>
         <button class="btn btn-primary" onclick="participateNext()">Suivant →</button>
-      </div>
-    `;
+      </div>`;
   } else if (s === 2) {
     content.innerHTML = `
       <h2>Montant</h2>
       <p class="modal-subtitle">${a.nom}</p>
       <div class="amount-remaining-info">
         Reste à financer : <strong>${restant} ${a.devise}</strong>
-        (financé à ${Math.round((a.montant_finance / a.prix) * 100)}%)
+        (financé à ${Math.round(((a.montant_finance||0) / a.prix) * 100)}%)
       </div>
       ${participateState.buyAll ? `
         <div class="form-group">
           <label class="form-label">Montant total</label>
           <input class="form-input" value="${restant} ${a.devise}" disabled>
-        </div>
-      ` : `
+        </div>` : `
         <div class="form-group">
           <label class="form-label">Votre participation (${a.devise})</label>
-          <input class="form-input" id="p-montant" type="number" min="1" max="${restant}" value="${participateState.montant || ''}">
-        </div>
-      `}
+          <input class="form-input" id="p-montant" type="number" min="1" max="${restant}" value="${participateState.montant||''}">
+        </div>`}
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="participatePrev()">← Retour</button>
         <button class="btn btn-primary" onclick="participateNext()">Suivant →</button>
-      </div>
-    `;
+      </div>`;
   } else if (s === 3) {
     content.innerHTML = `
       <h2>Coordonnées bancaires</h2>
       <p class="modal-subtitle">Effectuez un virement vers le compte suivant.</p>
-      <button class="btn btn-secondary" style="margin-bottom:1rem;" onclick="document.getElementById('iban-reveal').style.display='block';this.style.display='none'">Afficher les coordonnées bancaires</button>
+      <button class="btn btn-secondary" style="margin-bottom:1rem;"
+        onclick="document.getElementById('iban-reveal').style.display='block';this.style.display='none'">Afficher les coordonnées bancaires</button>
       <div id="iban-reveal" style="display:none">
         <div class="iban-box">
-          <div class="iban-row">
-            <span class="iban-key">Titulaire</span>
-            <span class="iban-val">${DB.params.titulaire}</span>
-          </div>
-          <div class="iban-row">
-            <span class="iban-key">IBAN</span>
-            <span class="iban-val">${DB.params.iban}</span>
-          </div>
-          <div class="iban-row">
-            <span class="iban-key">BIC</span>
-            <span class="iban-val">${DB.params.bic}</span>
-          </div>
+          <div class="iban-row"><span class="iban-key">Titulaire</span><span class="iban-val">${DB.params.titulaire||''}</span></div>
+          <div class="iban-row"><span class="iban-key">IBAN</span><span class="iban-val">${DB.params.iban||''}</span></div>
+          <div class="iban-row"><span class="iban-key">BIC</span><span class="iban-val">${DB.params.bic||''}</span></div>
         </div>
         <div class="form-hint" style="margin-top:0.5rem;">Montant à virer : <strong>${participateState.montant} ${a.devise}</strong></div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="participatePrev()">← Retour</button>
         <button class="btn btn-primary" onclick="participateNext()">Virement effectué ✓</button>
-      </div>
-    `;
+      </div>`;
   } else if (s === 4) {
     content.innerHTML = `
       <h2>Un message ?</h2>
       <p class="modal-subtitle">Souhaitez-vous laisser un message à Fabien &amp; Cécile ?</p>
       <div class="choice-group" style="margin-bottom:1.25rem;">
-        <button class="choice-btn ${participateState.wantMessage === true ? 'selected' : ''}" onclick="participateState.wantMessage=true;renderParticipateStep()">Oui</button>
+        <button class="choice-btn ${participateState.wantMessage === true  ? 'selected' : ''}" onclick="participateState.wantMessage=true;renderParticipateStep()">Oui</button>
         <button class="choice-btn ${participateState.wantMessage === false ? 'selected' : ''}" onclick="participateState.wantMessage=false;renderParticipateStep()">Non</button>
       </div>
       ${participateState.wantMessage ? `
@@ -1813,37 +1847,35 @@ function renderParticipateStep() {
         <div class="form-group">
           <label class="form-label">Visibilité du message</label>
           <div class="choice-group">
-            <button class="choice-btn ${participateState.messageVisible !== false ? 'selected' : ''}" id="pmv-public" onclick="participateState.messageVisible=true;document.querySelector('#pmv-public').classList.add('selected');document.querySelector('#pmv-private').classList.remove('selected');">🌍 Visible de tous</button>
-            <button class="choice-btn ${participateState.messageVisible === false ? 'selected' : ''}" id="pmv-private" onclick="participateState.messageVisible=false;document.querySelector('#pmv-private').classList.add('selected');document.querySelector('#pmv-public').classList.remove('selected');">🔒 Privé (admin seulement)</button>
+            <button class="choice-btn ${participateState.messageVisible !== false ? 'selected' : ''}" id="pmv-public"
+              onclick="participateState.messageVisible=true;document.getElementById('pmv-public').classList.add('selected');document.getElementById('pmv-private').classList.remove('selected');">🌍 Visible de tous</button>
+            <button class="choice-btn ${participateState.messageVisible === false ? 'selected' : ''}" id="pmv-private"
+              onclick="participateState.messageVisible=false;document.getElementById('pmv-private').classList.add('selected');document.getElementById('pmv-public').classList.remove('selected');">🔒 Privé</button>
           </div>
-          <div class="form-hint" style="margin-top:0.4rem;">Un message privé ne sera visible que par Fabien &amp; Cécile.</div>
-        </div>
-      ` : ''}
+        </div>` : ''}
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="participatePrev()">← Retour</button>
         <button class="btn btn-primary" onclick="participateNext()" ${participateState.wantMessage === null ? 'disabled' : ''}>Continuer →</button>
-      </div>
-    `;
+      </div>`;
   } else if (s === 5) {
-    // Save & show confirmation
-    saveParticipation();
+    saveParticipation();   // async — writes to Firebase
     content.innerHTML = `
       <div class="confirmation-box">
         <div class="confirmation-heart">❤️</div>
         <div class="confirmation-text">${DB.params.msg_confirmation}</div>
       </div>
-      <div class="modal-actions" style="justify-content:center; margin-top:1.5rem;">
-        <button class="btn btn-primary" onclick="closeModal('modal-participate'); refreshApp()">Fermer</button>
-      </div>
-    `;
+      <div class="modal-actions" style="justify-content:center;margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="closeModal('modal-participate')">Fermer</button>
+      </div>`;
     document.getElementById('participate-steps').innerHTML =
-      Array.from({ length: 5 }, () => `<div class="step-dot done"></div>`).join('');
+      Array.from({length: totalSteps}, () => `<div class="step-dot done"></div>`).join('');
   }
 }
+window.renderParticipateStep = renderParticipateStep;
 
 function participateNext() {
   const s = participateState.step;
-  const a = DB.articles.find(x => x.id === participateState.articleId);
+  const a = DB.articles[participateState.articleFbKey];
 
   if (s === 1) {
     const nom = document.getElementById('p-nom').value.trim();
@@ -1853,152 +1885,165 @@ function participateNext() {
     if (!participateState.buyAll) {
       const m = parseFloat(document.getElementById('p-montant').value);
       if (!m || m <= 0) { showToast('Veuillez saisir un montant valide.'); return; }
-      const restant = Math.max(0, a.prix - a.montant_finance);
+      const restant = Math.max(0, a.prix - (a.montant_finance||0));
       if (m > restant) { showToast(`Le montant ne peut pas dépasser ${restant} ${a.devise}.`); return; }
       participateState.montant = m;
     } else {
-      participateState.montant = Math.max(0, a.prix - a.montant_finance);
+      participateState.montant = Math.max(0, a.prix - (a.montant_finance||0));
     }
   } else if (s === 4) {
     if (participateState.wantMessage) {
-      const msg = document.getElementById('p-message').value.trim();
-      participateState.message = msg;
+      participateState.message = (document.getElementById('p-message')||{}).value?.trim() || '';
     }
   }
   participateState.step++;
   renderParticipateStep();
 }
+window.participateNext = participateNext;
 
 function participatePrev() {
   participateState.step--;
   renderParticipateStep();
 }
+window.participatePrev = participatePrev;
 
-function saveParticipation() {
-  const a = DB.articles.find(x => x.id === participateState.articleId);
+async function saveParticipation() {
+  const a      = DB.articles[participateState.articleFbKey];
+  const fbKey  = participateState.articleFbKey;
 
-  // Add or find participant
-  let p = DB.participants.find(x => x.nom_prenom.toLowerCase() === participateState.nom.toLowerCase());
-  if (!p) {
-    p = { id: Date.now(), nom_prenom: participateState.nom, email: '', message: participateState.message };
-    DB.participants.push(p);
+  // Find or create participant
+  let pKey = null;
+  const existing = findParticipantByName(participateState.nom);
+  if (existing) {
+    pKey = existing._fbKey;
+  } else {
+    const newPRef = push(R.participants);
+    pKey = newPRef.key;
+    await set(newPRef, { nom_prenom: participateState.nom, email: '' });
   }
 
   // Add contribution
-  DB.contributions.push({
-    id: Date.now(),
-    article_id: participateState.articleId,
-    participant_id: p.id,
-    montant: participateState.montant,
-    statut: 'VIREMENT_ANNONCE',
-    date: new Date().toISOString().split('T')[0]
+  const contribRef = push(R.contributions);
+  await set(contribRef, {
+    article_id:    fbKey,
+    participant_id: pKey,
+    montant:       participateState.montant,
+    statut:        'VIREMENT_ANNONCE',
+    date:          new Date().toISOString().split('T')[0],
+    nameVisible:   participateState.nameVisible !== false
   });
 
-  // Add message if needed
+  // Add message
   if (participateState.wantMessage && participateState.message) {
-    DB.messages.push({
-      id: Date.now(),
-      participant_id: p.id,
-      texte: participateState.message,
-      date: new Date().toISOString().split('T')[0],
-      remercie: false,
-      public: participateState.messageVisible !== false
+    const msgRef = push(R.messages);
+    await set(msgRef, {
+      participant_id: pKey,
+      texte:          participateState.message,
+      date:           new Date().toISOString().split('T')[0],
+      public:         participateState.messageVisible !== false
     });
   }
 
-  // Store nameVisible preference on the contribution
-  const lastContrib = DB.contributions[DB.contributions.length - 1];
-  if (lastContrib) lastContrib.nameVisible = participateState.nameVisible !== false;
-
-  // If buying entirely, mark as reserved
-  if (participateState.buyAll) {
-    a.statut = 'Réservé';
-  } else {
-    // Update funded amount if confirmed (demo: mark as announced)
-    // In real scenario admin confirms
-    const totalAnnounced = DB.contributions
-      .filter(c => c.article_id === a.id && c.statut !== 'EN_ATTENTE')
-      .reduce((sum, c) => sum + c.montant, 0);
-    a.montant_finance = Math.min(a.prix, totalAnnounced);
-    if (a.montant_finance >= a.prix) a.statut = 'Financé';
-    else if (a.montant_finance > 0) a.statut = 'Participation en cours';
-  }
+  // Update article status
+  const newStatus = participateState.buyAll ? 'Réservé' : (a.statut === 'Disponible' ? 'Participation en cours' : a.statut);
+  await update(ref(db, `articles/${fbKey}`), { statut: newStatus });
 
   // Activity log
-  DB.activity.unshift({
-    type: participateState.buyAll ? 'reservation' : 'participation',
-    texte: `<strong>${participateState.nom}</strong> ${participateState.buyAll ? 'a réservé' : 'a participé à'} «${a.nom}»`,
-    time: 'À l\'instant'
+  const displayName = participateState.nameVisible !== false ? participateState.nom : 'Anonyme';
+  const actRef = push(R.activity);
+  await set(actRef, {
+    type:  participateState.buyAll ? 'reservation' : 'participation',
+    texte: `<strong>${displayName}</strong> ${participateState.buyAll ? 'a réservé' : 'a participé à'} «${a.nom}»`,
+    time:  new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}),
+    ts:    Date.now()
   });
-}
-
-function refreshApp() {
-  renderSummary();
-  renderArticles();
-  renderMessages();
 }
 
 // ============================================================
 // PROPOSE ARTICLE
 // ============================================================
 function openProposeModal() { openModal('modal-propose'); }
+window.openProposeModal = openProposeModal;
 
-function submitProposal() {
-  const nom = document.getElementById('propose-nom').value.trim();
+async function submitProposal() {
+  const nom     = document.getElementById('propose-nom').value.trim();
   const produit = document.getElementById('propose-produit').value.trim();
-  const lien = document.getElementById('propose-lien').value.trim();
+  const lien    = document.getElementById('propose-lien').value.trim();
   if (!nom || !produit) { showToast('Veuillez remplir les champs obligatoires.'); return; }
 
-  const newArticle = {
-    id: Date.now(),
-    categorie: 'Autres',
-    nom: produit,
-    description: 'Article proposé par ' + nom + ' — en attente de validation.',
-    prix: parseFloat(document.getElementById('propose-prix').value) || 0,
-    devise: document.getElementById('propose-devise').value,
+  const newRef = push(R.articles);
+  await set(newRef, {
+    categorie:       'Autres',
+    nom:             produit,
+    description:     'Article proposé par ' + nom + ' — en attente de validation.',
+    prix:            parseFloat(document.getElementById('propose-prix').value) || 0,
+    devise:          document.getElementById('propose-devise').value,
     montant_finance: 0,
-    photo_url: '',
-    product_url: lien || '#',
-    statut: 'Disponible',
-    pays: 'FR',
-    pending: true,
-    buttonsEnabled: false
-  };
-  DB.articles.push(newArticle);
-  DB.activity.unshift({ type: 'proposition', texte: `<strong>${nom}</strong> a proposé «${produit}»`, time: 'À l\'instant' });
+    photo_url:       '',
+    product_url:     lien || '#',
+    statut:          'Disponible',
+    pays:            'FR',
+    pending:         true,
+    buttonsEnabled:  false
+  });
+
+  const actRef = push(R.activity);
+  await set(actRef, {
+    type: 'proposition',
+    texte: `<strong>${nom}</strong> a proposé «${produit}»`,
+    time: new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+    ts: Date.now()
+  });
 
   closeModal('modal-propose');
   showToast('Merci pour votre suggestion ! Elle sera validée prochainement.');
-  document.getElementById('propose-nom').value = '';
-  document.getElementById('propose-produit').value = '';
-  document.getElementById('propose-lien').value = '';
-  document.getElementById('propose-prix').value = '';
+  ['propose-nom','propose-produit','propose-lien','propose-prix'].forEach(id => document.getElementById(id).value = '');
 }
+window.submitProposal = submitProposal;
 
 // ============================================================
-// MESSAGE
+// STANDALONE MESSAGE
 // ============================================================
 function openMessageModal() { openModal('modal-message'); }
+window.openMessageModal = openMessageModal;
 
-function submitMessage() {
-  const nom = document.getElementById('message-nom').value.trim();
+function setMsgVisibility(v) {
+  msgVisibility = v;
+  document.getElementById('msg-vis-public').classList.toggle('selected', v === 'public');
+  document.getElementById('msg-vis-private').classList.toggle('selected', v === 'private');
+}
+window.setMsgVisibility = setMsgVisibility;
+
+async function submitMessage() {
+  const nom   = document.getElementById('message-nom').value.trim();
   const texte = document.getElementById('message-texte').value.trim();
   if (!nom || !texte) { showToast('Veuillez remplir tous les champs.'); return; }
 
-  let p = DB.participants.find(x => x.nom_prenom.toLowerCase() === nom.toLowerCase());
-  if (!p) {
-    p = { id: Date.now(), nom_prenom: nom, email: '', message: texte };
-    DB.participants.push(p);
+  let pKey;
+  const existing = findParticipantByName(nom);
+  if (existing) {
+    pKey = existing._fbKey;
+  } else {
+    const pRef = push(R.participants);
+    pKey = pRef.key;
+    await set(pRef, { nom_prenom: nom, email: '' });
   }
-  DB.messages.push({ id: Date.now(), participant_id: p.id, texte, date: new Date().toISOString().split('T')[0], remercie: false, public: msgVisibility === 'public' });
+
+  const msgRef = push(R.messages);
+  await set(msgRef, {
+    participant_id: pKey,
+    texte,
+    date:   new Date().toISOString().split('T')[0],
+    public: msgVisibility === 'public'
+  });
 
   closeModal('modal-message');
   showToast('Votre message a bien été envoyé. Merci !');
   msgVisibility = 'public';
-  renderMessages();
-  document.getElementById('message-nom').value = '';
+  document.getElementById('message-nom').value  = '';
   document.getElementById('message-texte').value = '';
 }
+window.submitMessage = submitMessage;
 
 // ============================================================
 // ADMIN
@@ -2018,245 +2063,277 @@ function showAdminTab(tab) {
   document.getElementById('admin-panel-' + tab).classList.add('active');
   event.target.classList.add('active');
 }
+window.showAdminTab = showAdminTab;
 
 function renderAdminStats() {
-  const totalFinance = DB.contributions.filter(c => c.statut === 'VIREMENT_CONFIRME').reduce((s, c) => s + c.montant, 0);
-  const enAttente = DB.contributions.filter(c => c.statut === 'VIREMENT_ANNONCE').length;
-  const finances = DB.articles.filter(a => a.statut === 'Financé').length;
-  const reserves = DB.articles.filter(a => a.statut === 'Réservé').length;
-  const commandes = DB.articles.filter(a => a.statut === 'Commandé').length;
-  const recus = DB.articles.filter(a => a.statut === 'Reçu').length;
-
+  const contribs = contributionsArr();
+  const arts     = articlesArr();
+  const totalFinance = contribs.filter(c => c.statut === 'VIREMENT_CONFIRME').reduce((s,c) => s + (c.montant||0), 0);
+  const enAttente    = contribs.filter(c => c.statut === 'VIREMENT_ANNONCE').length;
   document.getElementById('admin-stats').innerHTML = `
     <div class="admin-stat"><div class="admin-stat-label">Total financé confirmé</div><div class="admin-stat-value accent">${totalFinance.toLocaleString('fr-FR')} €</div></div>
     <div class="admin-stat"><div class="admin-stat-label">Virements en attente</div><div class="admin-stat-value">${enAttente}</div></div>
-    <div class="admin-stat"><div class="admin-stat-label">Articles financés</div><div class="admin-stat-value">${finances}</div></div>
-    <div class="admin-stat"><div class="admin-stat-label">Articles réservés</div><div class="admin-stat-value">${reserves}</div></div>
-    <div class="admin-stat"><div class="admin-stat-label">Articles commandés</div><div class="admin-stat-value">${commandes}</div></div>
-    <div class="admin-stat"><div class="admin-stat-label">Articles reçus</div><div class="admin-stat-value">${recus}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles financés</div><div class="admin-stat-value">${arts.filter(a=>a.statut==='Financé').length}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles réservés</div><div class="admin-stat-value">${arts.filter(a=>a.statut==='Réservé').length}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles commandés</div><div class="admin-stat-value">${arts.filter(a=>a.statut==='Commandé').length}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles reçus</div><div class="admin-stat-value">${arts.filter(a=>a.statut==='Reçu').length}</div></div>
   `;
 }
 
 function renderAdminActivity() {
-  document.getElementById('admin-activity').innerHTML = DB.activity.slice(0, 10).map(a => `
-    <div class="activity-item">
-      <div class="activity-dot dot-${a.type}"></div>
-      <div>
-        <div class="activity-text">${a.texte}</div>
-        <div class="activity-time">${a.time}</div>
-      </div>
-    </div>
-  `).join('');
+  const acts = activityArr().slice(0, 10);
+  document.getElementById('admin-activity').innerHTML = acts.length
+    ? acts.map(a => `
+        <div class="activity-item">
+          <div class="activity-dot dot-${a.type}"></div>
+          <div>
+            <div class="activity-text">${a.texte}</div>
+            <div class="activity-time">${a.time||''}</div>
+          </div>
+        </div>`).join('')
+    : '<div class="empty-state"><p>Aucune activité pour l\'instant.</p></div>';
 }
 
 function renderAdminContribs() {
-  const tbody = document.getElementById('admin-contribs-body');
-  tbody.innerHTML = DB.contributions.map(c => {
-    const p = DB.participants.find(x => x.id === c.participant_id);
-    const a = DB.articles.find(x => x.id === c.article_id);
-    const statusClass = { 'EN_ATTENTE': 's-attente', 'VIREMENT_ANNONCE': 's-annonce', 'VIREMENT_CONFIRME': 's-confirme' }[c.statut] || 's-attente';
-    const statusLabel = { 'EN_ATTENTE': 'En attente', 'VIREMENT_ANNONCE': 'Annoncé', 'VIREMENT_CONFIRME': 'Confirmé' }[c.statut];
+  const contribs = contributionsArr();
+  const tbody    = document.getElementById('admin-contribs-body');
+  if (!contribs.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--taupe)">Aucune contribution</td></tr>';
+    return;
+  }
+  tbody.innerHTML = contribs.map(c => {
+    const p = participantsArr().find(x => x._fbKey === c.participant_id);
+    const a = articlesArr().find(x => x._fbKey === c.article_id);
+    const statusClass = {'EN_ATTENTE':'s-attente','VIREMENT_ANNONCE':'s-annonce','VIREMENT_CONFIRME':'s-confirme'}[c.statut]||'s-attente';
+    const statusLabel = {'EN_ATTENTE':'En attente','VIREMENT_ANNONCE':'Annoncé','VIREMENT_CONFIRME':'Confirmé'}[c.statut];
     const remercieLabel = c.remercie ? '✓ Remercié' : 'À remercier';
     const remercieClass = c.remercie ? 'btn-sm-success' : 'btn-sm-neutral';
+    const nameVis = c.nameVisible === false ? '🔒 Anonyme' : '🌍 Visible';
     return `
       <tr>
         <td>${p ? p.nom_prenom : '—'}</td>
         <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a ? a.nom : '—'}</td>
         <td style="font-weight:500;">${c.montant} ${a ? a.devise : '€'}</td>
         <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-        <td style="color:var(--taupe)">${c.date}</td>
+        <td><span style="font-size:11px;color:var(--taupe)">${nameVis}</span></td>
+        <td style="color:var(--taupe)">${c.date||''}</td>
         <td style="display:flex;gap:4px;flex-wrap:wrap;">
           ${c.statut !== 'VIREMENT_CONFIRME'
-            ? `<button class="btn-sm btn-sm-neutral" onclick="confirmerVirement(${c.id})">Confirmer à remercier</button>
-               <button class="btn-sm btn-sm-success" onclick="confirmerEtRemercier(${c.id})">Confirmer &amp; Remercier</button>`
-            : `<button class="btn-sm ${remercieClass}" onclick="toggleRemerciementContrib(${c.id})">${remercieLabel}</button>`}
+            ? `<button class="btn-sm btn-sm-neutral"  onclick="confirmerVirement('${c._fbKey}')">Confirmer à remercier</button>
+               <button class="btn-sm btn-sm-success"  onclick="confirmerEtRemercier('${c._fbKey}')">Confirmer &amp; Remercier</button>`
+            : `<button class="btn-sm ${remercieClass}" onclick="toggleRemerciementContrib('${c._fbKey}')">${remercieLabel}</button>`}
+          <button class="btn-sm btn-sm-danger" onclick="deleteContrib('${c._fbKey}')">🗑</button>
         </td>
-      </tr>
-    `;
+      </tr>`;
   }).join('');
 }
 
-function confirmerVirement(contribId) {
-  const c = DB.contributions.find(x => x.id === contribId);
+async function confirmerVirement(fbKey) {
+  const c = DB.contributions[fbKey];
   if (!c) return;
-  c.statut = 'VIREMENT_CONFIRME';
-  c.remercie = false;
-  const a = DB.articles.find(x => x.id === c.article_id);
-  if (a) {
-    const totalConfirme = DB.contributions.filter(x => x.article_id === a.id && x.statut === 'VIREMENT_CONFIRME').reduce((s, x) => s + x.montant, 0);
-    a.montant_finance = Math.min(a.prix, totalConfirme);
-    if (a.montant_finance >= a.prix && a.statut !== 'Réservé') a.statut = 'Financé';
-  }
-  renderAdminContribs();
-  renderAdminStats();
+  await update(ref(db, `contributions/${fbKey}`), { statut: 'VIREMENT_CONFIRME', remercie: false });
+  await updateArticleFinance(c.article_id);
   showToast('Virement confirmé. Pensez à remercier !');
 }
+window.confirmerVirement = confirmerVirement;
 
-function confirmerEtRemercier(contribId) {
-  const c = DB.contributions.find(x => x.id === contribId);
+async function confirmerEtRemercier(fbKey) {
+  const c = DB.contributions[fbKey];
   if (!c) return;
-  c.statut = 'VIREMENT_CONFIRME';
-  c.remercie = true;
-  const a = DB.articles.find(x => x.id === c.article_id);
-  if (a) {
-    const totalConfirme = DB.contributions.filter(x => x.article_id === a.id && x.statut === 'VIREMENT_CONFIRME').reduce((s, x) => s + x.montant, 0);
-    a.montant_finance = Math.min(a.prix, totalConfirme);
-    if (a.montant_finance >= a.prix && a.statut !== 'Réservé') a.statut = 'Financé';
-  }
-  renderAdminContribs();
-  renderAdminStats();
+  await update(ref(db, `contributions/${fbKey}`), { statut: 'VIREMENT_CONFIRME', remercie: true });
+  await updateArticleFinance(c.article_id);
   showToast('Virement confirmé et participant remercié ✓');
 }
+window.confirmerEtRemercier = confirmerEtRemercier;
 
-function toggleRemerciementContrib(contribId) {
-  const c = DB.contributions.find(x => x.id === contribId);
-  if (c) { c.remercie = !c.remercie; renderAdminContribs(); showToast(c.remercie ? 'Marqué comme remercié.' : 'Remerciement retiré.'); }
+async function toggleRemerciementContrib(fbKey) {
+  const c = DB.contributions[fbKey];
+  if (!c) return;
+  await update(ref(db, `contributions/${fbKey}`), { remercie: !c.remercie });
+  showToast(c.remercie ? 'Remerciement retiré.' : 'Marqué comme remercié.');
+}
+window.toggleRemerciementContrib = toggleRemerciementContrib;
+
+async function deleteContrib(fbKey) {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cette contribution ? Cette action est irréversible.')) return;
+  const c = DB.contributions[fbKey];
+  await remove(ref(db, `contributions/${fbKey}`));
+  if (c) await updateArticleFinance(c.article_id);
+  showToast('Contribution supprimée.');
+}
+window.deleteContrib = deleteContrib;
+
+// Recompute montant_finance for an article from confirmed contribs
+async function updateArticleFinance(articleFbKey) {
+  const contribs = contributionsArr().filter(c => c.article_id === articleFbKey && c.statut === 'VIREMENT_CONFIRME');
+  const a = DB.articles[articleFbKey];
+  if (!a) return;
+  const total = contribs.reduce((s,c) => s + (c.montant||0), 0);
+  const montant_finance = Math.min(a.prix, total);
+  let statut = a.statut;
+  if (montant_finance >= a.prix && !['Réservé','Commandé','Reçu'].includes(a.statut)) statut = 'Financé';
+  else if (montant_finance > 0 && a.statut === 'Financé') statut = 'Participation en cours';
+  else if (montant_finance === 0 && a.statut === 'Participation en cours') statut = 'Disponible';
+  await update(ref(db, `articles/${articleFbKey}`), { montant_finance, statut });
 }
 
 function renderAdminArticles() {
-  document.getElementById('admin-articles-body').innerHTML = DB.articles.map(a => {
+  const arts = articlesArr();
+  const tbody = document.getElementById('admin-articles-body');
+  if (!arts.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--taupe)">Aucun article. Ajoutez-en depuis le bouton ci-dessus.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = arts.map(a => {
     const isPending = !!a.pending;
-    const isNZ = a.pays === 'NZ';
-    // Boutons toggle: always available for FR non-pending items; NZ always on
+    const isNZ     = a.pays === 'NZ';
     const boutonsCell = isNZ
       ? `<span style="font-size:11px;color:var(--taupe)">Toujours actifs (NZ)</span>`
       : isPending
         ? `<span style="font-size:11px;color:var(--taupe)">N/A</span>`
-        : `<button class="btn-sm ${a.buttonsEnabled ? 'btn-sm-success' : 'btn-sm-neutral'}" onclick="toggleArticleButtons(${a.id})">
+        : `<button class="btn-sm ${a.buttonsEnabled ? 'btn-sm-success' : 'btn-sm-neutral'}" onclick="toggleArticleButtons('${a._fbKey}')">
             ${a.buttonsEnabled ? '✓ Activés' : '✗ Désactivés'}
           </button>`;
     const actionsCell = isPending
-      ? `<button class="btn-sm btn-sm-success" onclick="approveProposal(${a.id})">✓ Approuver</button>
-         <button class="btn-sm btn-sm-danger" onclick="deleteArticle(${a.id})">✗ Rejeter</button>`
-      : `<button class="btn-sm btn-sm-neutral" onclick="editArticle(${a.id})">Modifier</button>
-         <button class="btn-sm btn-sm-danger" onclick="deleteArticle(${a.id})">Supprimer</button>`;
+      ? `<button class="btn-sm btn-sm-success" onclick="approveProposal('${a._fbKey}')">✓ Approuver</button>
+         <button class="btn-sm btn-sm-danger"  onclick="deleteArticle('${a._fbKey}')">✗ Rejeter</button>`
+      : `<button class="btn-sm btn-sm-neutral" onclick="editArticle('${a._fbKey}')">Modifier</button>
+         <button class="btn-sm btn-sm-danger"  onclick="deleteArticle('${a._fbKey}')">Supprimer</button>`;
     return `
       <tr ${isPending ? 'style="background:rgba(184,149,106,0.06);"' : ''}>
-        <td style="font-weight:500;">${a.nom} ${isPending ? '<span style="font-size:10px;background:rgba(184,149,106,0.2);color:#8B6B40;padding:1px 5px;border-radius:10px;margin-left:4px;">En attente</span>' : ''}</td>
+        <td style="font-weight:500;">${a.nom}${isPending ? ' <span style="font-size:10px;background:rgba(184,149,106,0.2);color:#8B6B40;padding:1px 5px;border-radius:10px;">En attente</span>' : ''}</td>
         <td>${a.categorie}</td>
-        <td><span style="font-size:11px;background:${isNZ ? 'var(--deep-brown)' : 'var(--cream-dark)'};color:${isNZ ? 'var(--cream)' : 'var(--taupe)'};padding:1px 6px;border-radius:3px;">${isNZ ? 'NZ' : 'FR'}</span></td>
+        <td><span style="font-size:11px;background:${isNZ?'var(--deep-brown)':'var(--cream-dark)'};color:${isNZ?'var(--cream)':'var(--taupe)'};padding:1px 6px;border-radius:3px;">${isNZ?'NZ':'FR'}</span></td>
         <td>${a.prix} ${a.devise}</td>
-        <td>${a.montant_finance} ${a.devise}</td>
+        <td>${a.montant_finance||0} ${a.devise}</td>
         <td>
-          ${isPending
-            ? `<span class="status-pill s-attente">En attente</span>`
-            : `<select class="form-select" style="padding:0.25rem 0.5rem;font-size:12px;background:var(--cream);" onchange="changeArticleStatus(${a.id}, this.value)">
-                ${['Disponible','Participation en cours','Financé','Réservé','Commandé','Reçu'].map(s => `<option value="${s}" ${a.statut === s ? 'selected' : ''}>${s}</option>`).join('')}
-              </select>`}
+          ${isPending ? `<span class="status-pill s-attente">En attente</span>` :
+            `<select class="form-select" style="padding:0.25rem 0.5rem;font-size:12px;background:var(--cream);"
+              onchange="changeArticleStatus('${a._fbKey}', this.value)">
+              ${['Disponible','Participation en cours','Financé','Réservé','Commandé','Reçu']
+                .map(s => `<option value="${s}" ${a.statut===s?'selected':''}>${s}</option>`).join('')}
+            </select>`}
         </td>
         <td>${boutonsCell}</td>
         <td style="display:flex;gap:4px;flex-wrap:wrap;">${actionsCell}</td>
-      </tr>
-    `;
+      </tr>`;
   }).join('');
 }
 
-function toggleArticleButtons(id) {
-  const a = DB.articles.find(x => x.id === id);
-  if (a) {
-    a.buttonsEnabled = !a.buttonsEnabled;
-    renderAdminArticles();
-    showToast(`Boutons ${a.buttonsEnabled ? 'activés' : 'désactivés'} pour «${a.nom}».`);
-  }
+async function toggleArticleButtons(fbKey) {
+  const a = DB.articles[fbKey];
+  if (!a) return;
+  await update(ref(db, `articles/${fbKey}`), { buttonsEnabled: !a.buttonsEnabled });
+  showToast(`Boutons ${!a.buttonsEnabled ? 'activés' : 'désactivés'}.`);
 }
+window.toggleArticleButtons = toggleArticleButtons;
 
-function approveProposal(id) {
-  const a = DB.articles.find(x => x.id === id);
-  if (a) {
-    a.pending = false;
-    a.statut = 'Disponible';
-    renderAdminArticles();
-    showToast(`«${a.nom}» approuvé et ajouté à la liste.`);
-  }
+async function approveProposal(fbKey) {
+  await update(ref(db, `articles/${fbKey}`), { pending: false, statut: 'Disponible' });
+  showToast('Article approuvé et ajouté à la liste.');
 }
+window.approveProposal = approveProposal;
 
-function changeArticleStatus(id, newStatus) {
-  const a = DB.articles.find(x => x.id === id);
-  if (a) { a.statut = newStatus; showToast('Statut mis à jour.'); }
+async function changeArticleStatus(fbKey, newStatus) {
+  await update(ref(db, `articles/${fbKey}`), { statut: newStatus });
+  showToast('Statut mis à jour.');
 }
+window.changeArticleStatus = changeArticleStatus;
 
-function deleteArticle(id) {
+async function deleteArticle(fbKey) {
   if (!confirm('Supprimer cet article ?')) return;
-  DB.articles = DB.articles.filter(a => a.id !== id);
-  renderAdminArticles();
-  renderAdminStats();
+  await remove(ref(db, `articles/${fbKey}`));
   showToast('Article supprimé.');
 }
+window.deleteArticle = deleteArticle;
+
+// ── ARTICLE FORM ──────────────────────────────────────────────
+let afButtonsEnabled = false;
 
 function setAfButtons(enabled) {
-  const on = document.getElementById('af-btn-on');
+  afButtonsEnabled = enabled;
+  const on  = document.getElementById('af-btn-on');
   const off = document.getElementById('af-btn-off');
-  if (!on || !off) return;
-  on.classList.toggle('selected', enabled);
-  off.classList.toggle('selected', !enabled);
+  if (on && off) {
+    on.classList.toggle('selected', enabled);
+    off.classList.toggle('selected', !enabled);
+  }
 }
+window.setAfButtons = setAfButtons;
 
-function editArticle(id) {
-  const a = DB.articles.find(x => x.id === id);
+function editArticle(fbKey) {
+  const a = DB.articles[fbKey];
   if (!a) return;
-  document.getElementById('article-form-title').textContent = 'Modifier l\'article';
+  document.getElementById('article-form-title').textContent   = 'Modifier l\'article';
   document.getElementById('article-form-subtitle').textContent = a.nom;
-  document.getElementById('article-form-id').value = id;
-  document.getElementById('af-nom').value = a.nom;
-  document.getElementById('af-categorie').value = a.categorie;
-  document.getElementById('af-description').value = a.description;
-  document.getElementById('af-prix').value = a.prix;
-  document.getElementById('af-devise').value = a.devise;
-  document.getElementById('af-photo').value = a.photo_url;
-  document.getElementById('af-lien').value = a.product_url;
-  document.getElementById('af-statut').value = a.statut;
-  document.getElementById('af-pays').value = a.pays || (a.devise === 'NZD' ? 'NZ' : 'FR');
+  document.getElementById('article-form-id').value  = fbKey;
+  document.getElementById('af-nom').value           = a.nom;
+  document.getElementById('af-categorie').value     = a.categorie;
+  document.getElementById('af-description').value   = a.description||'';
+  document.getElementById('af-prix').value          = a.prix||'';
+  document.getElementById('af-devise').value        = a.devise||'EUR';
+  document.getElementById('af-photo').value         = a.photo_url||'';
+  document.getElementById('af-lien').value          = a.product_url||'';
+  document.getElementById('af-statut').value        = a.statut||'Disponible';
+  document.getElementById('af-pays').value          = a.pays||'FR';
   setAfButtons(!!a.buttonsEnabled);
   openModal('modal-article-form');
 }
+window.editArticle = editArticle;
 
 function openAddArticleModal() {
-  document.getElementById('article-form-title').textContent = 'Ajouter un article';
+  document.getElementById('article-form-title').textContent   = 'Ajouter un article';
   document.getElementById('article-form-subtitle').textContent = 'Nouvel article pour la liste.';
   document.getElementById('article-form-id').value = '';
   ['af-nom','af-description','af-photo','af-lien'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('af-prix').value = '';
+  document.getElementById('af-prix').value      = '';
   document.getElementById('af-categorie').value = 'Vêtements';
-  document.getElementById('af-devise').value = 'EUR';
-  document.getElementById('af-statut').value = 'Disponible';
-  document.getElementById('af-pays').value = 'FR';
+  document.getElementById('af-devise').value    = 'EUR';
+  document.getElementById('af-statut').value    = 'Disponible';
+  document.getElementById('af-pays').value      = 'FR';
   setAfButtons(false);
   openModal('modal-article-form');
 }
+window.openAddArticleModal = openAddArticleModal;
 
-function saveArticleForm() {
-  const id = document.getElementById('article-form-id').value;
+async function saveArticleForm() {
+  const fbKey       = document.getElementById('article-form-id').value;
   const selectedPays = document.getElementById('af-pays').value;
-  const btnOn = document.getElementById('af-btn-on').classList.contains('selected');
   const data = {
-    nom: document.getElementById('af-nom').value.trim(),
-    categorie: document.getElementById('af-categorie').value,
-    description: document.getElementById('af-description').value.trim(),
-    prix: parseFloat(document.getElementById('af-prix').value) || 0,
-    devise: document.getElementById('af-devise').value,
-    photo_url: document.getElementById('af-photo').value.trim(),
-    product_url: document.getElementById('af-lien').value.trim() || '#',
-    statut: document.getElementById('af-statut').value,
-    pays: selectedPays,
-    // NZ articles always have buttons enabled; FR respects the explicit toggle
-    buttonsEnabled: selectedPays === 'NZ' ? true : btnOn
+    nom:            document.getElementById('af-nom').value.trim(),
+    categorie:      document.getElementById('af-categorie').value,
+    description:    document.getElementById('af-description').value.trim(),
+    prix:           parseFloat(document.getElementById('af-prix').value) || 0,
+    devise:         document.getElementById('af-devise').value,
+    photo_url:      document.getElementById('af-photo').value.trim(),
+    product_url:    document.getElementById('af-lien').value.trim() || '#',
+    statut:         document.getElementById('af-statut').value,
+    pays:           selectedPays,
+    buttonsEnabled: selectedPays === 'NZ' ? true : afButtonsEnabled
   };
   if (!data.nom) { showToast('Veuillez saisir un nom.'); return; }
 
-  if (id) {
-    const a = DB.articles.find(x => x.id == id);
-    if (a) Object.assign(a, data);
+  if (fbKey) {
+    await update(ref(db, `articles/${fbKey}`), data);
   } else {
-    DB.articles.push({ id: Date.now(), montant_finance: 0, pending: false, ...data });
+    const newRef = push(R.articles);
+    await set(newRef, { ...data, montant_finance: 0, pending: false });
   }
   closeModal('modal-article-form');
-  renderAdminArticles();
   showToast('Article enregistré.');
 }
+window.saveArticleForm = saveArticleForm;
 
+// ── MESSAGES ADMIN ──────────────────────────────────────────
 function renderAdminMessages() {
-  document.getElementById('admin-messages-body').innerHTML = DB.messages.map(m => {
-    const p = DB.participants.find(x => x.id === m.participant_id);
+  const msgs = messagesArr();
+  const tbody = document.getElementById('admin-messages-body');
+  if (!msgs.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--taupe)">Aucun message</td></tr>';
+    return;
+  }
+  tbody.innerHTML = msgs.map(m => {
+    const p = participantsArr().find(x => x._fbKey === m.participant_id);
     const d = new Date(m.date).toLocaleDateString('fr-FR');
     return `
       <tr>
@@ -2264,51 +2341,57 @@ function renderAdminMessages() {
         <td style="font-style:italic;color:var(--warm-brown);">${m.texte}</td>
         <td style="color:var(--taupe)">${d}</td>
         <td>
-          <button class="btn-sm ${m.public !== false ? 'btn-sm-success' : 'btn-sm-neutral'}" onclick="toggleMessageVisibility(${m.id})">
+          <button class="btn-sm ${m.public !== false ? 'btn-sm-success' : 'btn-sm-neutral'}"
+            onclick="toggleMessageVisibility('${m._fbKey}')">
             ${m.public !== false ? '🌍 Visible' : '🔒 Privé'}
           </button>
         </td>
-      </tr>
-    `;
+      </tr>`;
   }).join('');
 }
 
-function toggleMessageVisibility(id) {
-  const m = DB.messages.find(x => x.id === id);
-  if (m) {
-    m.public = m.public === false ? true : false;
-    renderAdminMessages();
-    renderMessages();
-    showToast(m.public !== false ? 'Message rendu visible de tous.' : 'Message rendu privé.');
-  }
+async function toggleMessageVisibility(fbKey) {
+  const m = DB.messages[fbKey];
+  if (!m) return;
+  await update(ref(db, `messages/${fbKey}`), { public: m.public === false ? true : false });
+  showToast(m.public === false ? 'Message rendu visible de tous.' : 'Message rendu privé.');
 }
+window.toggleMessageVisibility = toggleMessageVisibility;
 
+// ── PARAMS ──────────────────────────────────────────────────
 function loadParams() {
-  document.getElementById('param-pwd-famille').value = DB.params.pwd_famille;
-  document.getElementById('param-pwd-admin').value = DB.params.pwd_admin;
-  document.getElementById('param-titulaire').value = DB.params.titulaire;
-  document.getElementById('param-iban').value = DB.params.iban;
-  document.getElementById('param-bic').value = DB.params.bic;
-  document.getElementById('param-msg-confirmation').value = DB.params.msg_confirmation;
-  document.getElementById('param-taux').value = DB.params.taux;
+  const p = DB.params;
+  document.getElementById('param-pwd-famille').value        = p.pwd_famille||'';
+  document.getElementById('param-pwd-admin').value          = p.pwd_admin||'';
+  document.getElementById('param-titulaire').value          = p.titulaire||'';
+  document.getElementById('param-iban').value               = p.iban||'';
+  document.getElementById('param-bic').value                = p.bic||'';
+  document.getElementById('param-msg-confirmation').value   = p.msg_confirmation||'';
+  document.getElementById('param-taux').value               = p.taux||0.52;
 }
 
-function saveParams() {
-  DB.params.pwd_famille = document.getElementById('param-pwd-famille').value || DB.params.pwd_famille;
-  DB.params.pwd_admin = document.getElementById('param-pwd-admin').value || DB.params.pwd_admin;
-  DB.params.titulaire = document.getElementById('param-titulaire').value;
-  DB.params.iban = document.getElementById('param-iban').value;
-  DB.params.bic = document.getElementById('param-bic').value;
-  DB.params.msg_confirmation = document.getElementById('param-msg-confirmation').value;
-  DB.params.taux = parseFloat(document.getElementById('param-taux').value) || 0.52;
+async function saveParams() {
+  const updates = {
+    pwd_famille:      document.getElementById('param-pwd-famille').value || DB.params.pwd_famille,
+    pwd_admin:        document.getElementById('param-pwd-admin').value   || DB.params.pwd_admin,
+    titulaire:        document.getElementById('param-titulaire').value,
+    iban:             document.getElementById('param-iban').value,
+    bic:              document.getElementById('param-bic').value,
+    msg_confirmation: document.getElementById('param-msg-confirmation').value,
+    taux:             parseFloat(document.getElementById('param-taux').value) || 0.52
+  };
+  await set(R.params, updates);
   showToast('Paramètres enregistrés avec succès.');
 }
+window.saveParams = saveParams;
 
 // ============================================================
 // MODAL HELPERS
 // ============================================================
-function openModal(id) { document.getElementById(id).classList.add('open'); }
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window.openModal  = openModal;
+window.closeModal = closeModal;
 
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => {
@@ -2327,7 +2410,7 @@ function showToast(msg) {
 }
 
 // ============================================================
-// INIT: show login on load
+// INIT: show login screen
 // ============================================================
 document.querySelectorAll('.screen').forEach(s => {
   s.style.display = 'none';
@@ -2335,6 +2418,7 @@ document.querySelectorAll('.screen').forEach(s => {
 });
 document.getElementById('screen-login').style.display = 'flex';
 document.getElementById('screen-login').classList.add('active');
+
 </script>
 </body>
 </html>
