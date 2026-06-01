@@ -2297,7 +2297,7 @@ function openAddArticleModal() {
 window.openAddArticleModal = openAddArticleModal;
 
 async function saveArticleForm() {
-  const fbKey       = document.getElementById('article-form-id').value;
+  const fbKey        = document.getElementById('article-form-id').value;
   const selectedPays = document.getElementById('af-pays').value;
   const data = {
     nom:            document.getElementById('af-nom').value.trim(),
@@ -2313,14 +2313,18 @@ async function saveArticleForm() {
   };
   if (!data.nom) { showToast('Veuillez saisir un nom.'); return; }
 
-  if (fbKey) {
-    await update(ref(db, `articles/${fbKey}`), data);
-  } else {
-    const newRef = push(R.articles);
-    await set(newRef, { ...data, montant_finance: 0, pending: false });
+  try {
+    if (fbKey) {
+      await update(ref(db, `articles/${fbKey}`), data);
+    } else {
+      const newRef = push(R.articles);
+      await set(newRef, { ...data, montant_finance: 0, pending: false });
+    }
+    closeModal('modal-article-form');
+    showToast('Article enregistré.');
+  } catch (error) {
+    showToast('Erreur : ' + error.message);
   }
-  closeModal('modal-article-form');
-  showToast('Article enregistré.');
 }
 window.saveArticleForm = saveArticleForm;
 
