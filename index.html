@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fabien Gonidec & Cécile Henson — Liste de naissance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF8F4;
+    --cream-dark: #F2EEE6;
+    --parchment: #E8E2D7;
+    --taupe: #9C9283;
+    --warm-brown: #5C5244;
+    --deep-brown: #2C2820;
+    --sage: #7A8C78;
+    --dusty-rose: #C4937A;
+    --gold: #B8956A;
+    --gold-light: #D4B48C;
+    --white: #FFFFFF;
+    --shadow: rgba(44, 40, 32, 0.08);
+    --shadow-md: rgba(44, 40, 32, 0.14);
+    --radius: 4px;
+    --radius-lg: 10px;
+    --radius-xl: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--deep-brown);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ─── LOGIN SCREEN ─── */
+  #screen-login {
+    background: var(--deep-brown);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  #screen-login::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(184,149,106,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(122,140,120,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .login-card {
+    background: rgba(250,248,244,0.04);
+    border: 1px solid rgba(250,248,244,0.12);
+    border-radius: var(--radius-xl);
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    position: relative;
+    backdrop-filter: blur(10px);
+  }
+  .login-ornament {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+  .login-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+  .login-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--gold-light);
+    margin-bottom: 2.5rem;
+    opacity: 0.8;
+  }
+  .login-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 0 auto 2rem;
+    opacity: 0.4;
+  }
+  .login-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(250,248,244,0.45);
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+  .login-input {
+    width: 100%;
+    background: rgba(250,248,244,0.06);
+    border: 1px solid rgba(250,248,244,0.15);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.1em;
+  }
+  .login-input::placeholder { color: rgba(250,248,244,0.25); letter-spacing: 0; }
+  .login-input:focus { border-color: rgba(184,149,106,0.5); }
+  .login-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--deep-brown);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.25rem;
+  }
+  .login-btn:hover { background: var(--gold-light); }
+  .login-btn:active { transform: scale(0.98); }
+  .login-error {
+    color: #E07A6A;
+    font-size: 13px;
+    margin-top: 0.75rem;
+    display: none;
+  }
+  .login-admin-link {
+    margin-top: 2rem;
+    font-size: 12px;
+    color: rgba(250,248,244,0.25);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .login-admin-link:hover { color: rgba(250,248,244,0.5); }
+
+  /* ─── MAIN APP ─── */
+  #screen-app { background: var(--cream); }
+
+  /* HEADER */
+  .site-header {
+    background: var(--deep-brown);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(250,248,244,0.06);
+  }
+  .header-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .header-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--cream);
+    letter-spacing: 0.03em;
+  }
+  .header-brand span {
+    color: var(--gold-light);
+    font-style: italic;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+    opacity: 0.8;
+  }
+  .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+  .header-btn {
+    background: none;
+    border: 1px solid rgba(250,248,244,0.15);
+    border-radius: var(--radius);
+    color: rgba(250,248,244,0.55);
+    padding: 0.4rem 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .header-btn:hover { color: var(--cream); border-color: rgba(250,248,244,0.3); }
+
+  /* HERO */
+  .hero {
+    background: var(--deep-brown);
+    padding: 4rem 2rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--cream));
+  }
+  .hero-pretitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    opacity: 0.7;
+    margin-bottom: 1rem;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--gold-light);
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+  }
+  .hero-message {
+    font-size: 14px;
+    color: rgba(250,248,244,0.5);
+    max-width: 400px;
+    margin: 0 auto;
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+  }
+
+  /* NAV */
+  .category-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--parchment);
+    position: sticky;
+    top: 60px;
+    z-index: 90;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .category-nav::-webkit-scrollbar { display: none; }
+  .category-nav-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    gap: 0;
+  }
+  .cat-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 1rem 1.25rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--taupe);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .cat-btn:hover { color: var(--warm-brown); }
+  .cat-btn.active { color: var(--deep-brown); border-bottom-color: var(--gold); font-weight: 500; }
+  .cat-count {
+    display: inline-block;
+    background: var(--cream-dark);
+    color: var(--taupe);
+    font-size: 10px;
+    border-radius: 10px;
+    padding: 1px 6px;
+    margin-left: 4px;
+    font-weight: 500;
+  }
+  .cat-btn.active .cat-count { background: rgba(184,149,106,0.15); color: var(--gold); }
+
+  /* CONTENT */
+  .content-area {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .summary-card {
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    flex: 1;
+    min-width: 150px;
+  }
+  .summary-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--taupe);
+    margin-bottom: 0.25rem;
+  }
+  .summary-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--deep-brown);
+  }
+
+  /* ARTICLE GRID */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  /* ARTICLE CARD */
+  .article-card {
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: default;
+  }
+  .article-card.active-card:hover { box-shadow: 0 8px 30px var(--shadow-md); transform: translateY(-2px); }
+  /* Inactive = Financé, Réservé, Commandé, Reçu */
+  .article-card.inactive {
+    opacity: 0.52;
+    filter: grayscale(35%);
+  }
+  .article-card.inactive:hover { box-shadow: none; transform: none; }
+  .article-img-wrap {
+    position: relative;
+    aspect-ratio: 4/3;
+    background: var(--cream-dark);
+    overflow: hidden;
+  }
+  .article-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+  }
+  .article-card:hover .article-img-wrap img { transform: scale(1.03); }
+  .article-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+  .badge-disponible { background: rgba(122,140,120,0.15); color: #4A6B48; }
+  .badge-en-cours { background: rgba(184,149,106,0.15); color: #8B6B40; }
+  .badge-finance { background: rgba(122,140,120,0.2); color: #4A6B48; }
+  .badge-reserve { background: rgba(92,82,68,0.15); color: var(--warm-brown); }
+  .badge-commande { background: rgba(44,40,32,0.1); color: var(--deep-brown); }
+  .badge-recu { background: rgba(44,40,32,0.08); color: var(--taupe); text-decoration: line-through; }
+  .badge-nz {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: var(--deep-brown);
+    color: var(--cream);
+    font-size: 10px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  .article-body { padding: 1.1rem 1.25rem 1.25rem; }
+  .article-cat {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--taupe);
+    margin-bottom: 0.3rem;
+  }
+  .article-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--deep-brown);
+    line-height: 1.3;
+    margin-bottom: 0.4rem;
+  }
+  .article-desc {
+    font-size: 12.5px;
+    color: var(--taupe);
+    line-height: 1.5;
+    margin-bottom: 0.85rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .article-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+  .article-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--deep-brown);
+  }
+  .article-price-nz {
+    font-size: 11px;
+    color: var(--taupe);
+  }
+  .progress-wrap { margin-bottom: 0.85rem; }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--taupe);
+    margin-bottom: 0.35rem;
+  }
+  .progress-info strong { color: var(--warm-brown); }
+  .progress-bar-bg {
+    height: 3px;
+    background: var(--cream-dark);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+  .contributors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.85rem;
+  }
+  .contributor-pill {
+    background: var(--cream-dark);
+    color: var(--warm-brown);
+    font-size: 11px;
+    padding: 0.2rem 0.55rem;
+    border-radius: 20px;
+  }
+  .article-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .btn {
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--deep-brown);
+    color: var(--cream);
+  }
+  .btn-primary:hover { background: var(--warm-brown); }
+  .btn-secondary {
+    background: var(--cream-dark);
+    color: var(--warm-brown);
+    border: 1px solid var(--parchment);
+  }
+  .btn-secondary:hover { background: var(--parchment); }
+  .btn-outline {
+    background: none;
+    color: var(--taupe);
+    border: 1px solid var(--parchment);
+  }
+  .btn-outline:hover { border-color: var(--taupe); color: var(--warm-brown); }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--deep-brown);
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* PROPOSE ARTICLE */
+  .propose-banner {
+    margin-top: 2.5rem;
+    background: var(--white);
+    border: 1px dashed var(--parchment);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .propose-banner:hover { border-color: var(--gold-light); background: rgba(184,149,106,0.03); }
+  .propose-banner h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--deep-brown);
+    margin-bottom: 0.35rem;
+  }
+  .propose-banner p { font-size: 13px; color: var(--taupe); }
+
+  /* MESSAGE BOARD */
+  .messages-section { margin-top: 3rem; }
+  .messages-section h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--deep-brown);
+    margin-bottom: 1.25rem;
+  }
+  .message-list { display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.5rem; }
+  .message-card {
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+  }
+  .message-author {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--deep-brown);
+    margin-bottom: 0.25rem;
+  }
+  .message-text { font-size: 14px; color: var(--warm-brown); line-height: 1.6; font-style: italic; }
+  .message-date { font-size: 11px; color: var(--taupe); margin-top: 0.4rem; }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44,40,32,0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--cream-dark);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--taupe);
+    font-size: 16px;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--parchment); color: var(--deep-brown); }
+  .modal h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--deep-brown);
+    margin-bottom: 0.25rem;
+  }
+  .modal-subtitle { font-size: 13px; color: var(--taupe); margin-bottom: 1.5rem; }
+
+  /* STEP INDICATOR */
+  .steps-indicator {
+    display: flex;
+    gap: 0.35rem;
+    margin-bottom: 1.5rem;
+  }
+  .step-dot {
+    height: 3px;
+    border-radius: 2px;
+    flex: 1;
+    background: var(--cream-dark);
+    transition: background 0.2s;
+  }
+  .step-dot.active { background: var(--gold); }
+  .step-dot.done { background: var(--sage); }
+
+  /* FORM */
+  .form-group { margin-bottom: 1.1rem; }
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--taupe);
+    margin-bottom: 0.4rem;
+  }
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    background: var(--cream);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--deep-brown);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--gold-light);
+  }
+  .form-textarea { min-height: 90px; resize: vertical; }
+  .form-hint { font-size: 11.5px; color: var(--taupe); margin-top: 0.3rem; }
+
+  /* IBAN BOX */
+  .iban-box {
+    background: var(--cream-dark);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+  .iban-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+  }
+  .iban-row + .iban-row { border-top: 1px solid var(--parchment); }
+  .iban-key { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--taupe); }
+  .iban-val { font-size: 13px; font-weight: 500; color: var(--deep-brown); font-family: 'DM Sans', monospace; }
+
+  /* AMOUNT REMAINING */
+  .amount-remaining-info {
+    background: rgba(184,149,106,0.08);
+    border: 1px solid rgba(184,149,106,0.2);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 13px;
+    color: var(--warm-brown);
+  }
+  .amount-remaining-info strong { color: var(--deep-brown); }
+
+  /* MODAL ACTIONS */
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+  }
+
+  /* YES/NO CHOICE */
+  .choice-group { display: flex; gap: 0.5rem; }
+  .choice-btn {
+    flex: 1;
+    background: var(--cream-dark);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    padding: 0.6rem;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--warm-brown);
+  }
+  .choice-btn.selected { border-color: var(--gold); background: rgba(184,149,106,0.1); color: var(--deep-brown); }
+
+  /* CONFIRMATION MESSAGE */
+  .confirmation-box {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+  .confirmation-heart {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  .confirmation-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--deep-brown);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* ─── ADMIN SCREEN ─── */
+  #screen-admin {
+    background: var(--cream);
+    min-height: 100vh;
+  }
+  .admin-header {
+    background: var(--deep-brown);
+    padding: 0 2rem;
+    border-bottom: 1px solid rgba(250,248,244,0.06);
+  }
+  .admin-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .admin-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .admin-badge {
+    background: rgba(184,149,106,0.25);
+    color: var(--gold-light);
+    font-size: 10px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .admin-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .admin-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--parchment);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+  .admin-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.85rem 1.25rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--taupe);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .admin-tab.active { color: var(--deep-brown); border-bottom-color: var(--gold); font-weight: 500; }
+  .admin-panel { display: none; }
+  .admin-panel.active { display: block; }
+
+  /* ADMIN STATS */
+  .admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .admin-stat {
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+  }
+  .admin-stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--taupe);
+    margin-bottom: 0.4rem;
+  }
+  .admin-stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--deep-brown);
+  }
+  .admin-stat-value.accent { color: var(--sage); }
+
+  /* ADMIN TABLE */
+  .admin-table-wrap {
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .admin-table th {
+    background: var(--cream-dark);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--taupe);
+    border-bottom: 1px solid var(--parchment);
+  }
+  .admin-table td {
+    padding: 0.85rem 1rem;
+    font-size: 13px;
+    color: var(--deep-brown);
+    border-bottom: 1px solid var(--cream-dark);
+    vertical-align: middle;
+  }
+  .admin-table tr:last-child td { border-bottom: none; }
+  .admin-table tr:hover td { background: var(--cream); }
+  .status-pill {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .s-attente { background: rgba(184,149,106,0.15); color: #8B6B40; }
+  .s-annonce { background: rgba(122,140,120,0.15); color: #4A6B48; }
+  .s-confirme { background: rgba(122,140,120,0.25); color: #3A5B38; }
+  .btn-sm {
+    font-size: 11px;
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-sm-success { background: rgba(122,140,120,0.15); color: #4A6B48; }
+  .btn-sm-success:hover { background: rgba(122,140,120,0.25); }
+  .btn-sm-danger { background: rgba(224,122,106,0.12); color: #C0412C; }
+  .btn-sm-danger:hover { background: rgba(224,122,106,0.2); }
+  .btn-sm-neutral { background: var(--cream-dark); color: var(--warm-brown); border: 1px solid var(--parchment); }
+  .btn-sm-neutral:hover { background: var(--parchment); }
+
+  /* PARAMS */
+  .params-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+  .params-section {
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+  }
+  .params-section h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--deep-brown);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--cream-dark);
+  }
+
+  /* ACTIVITY LOG */
+  .activity-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .activity-item {
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius-lg);
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .activity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .dot-participation { background: var(--gold); }
+  .dot-reservation { background: var(--sage); }
+  .dot-proposition { background: var(--dusty-rose); }
+  .dot-virement { background: #7ab0c8; }
+  .activity-text { font-size: 13px; color: var(--warm-brown); line-height: 1.4; }
+  .activity-text strong { color: var(--deep-brown); }
+  .activity-time { font-size: 11px; color: var(--taupe); margin-top: 0.2rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .articles-grid { grid-template-columns: 1fr; }
+    .summary-bar { gap: 0.5rem; }
+    .summary-card { min-width: 120px; }
+    .content-area { padding: 1.5rem 1rem 3rem; }
+    .hero { padding: 2.5rem 1.25rem 4rem; }
+    .admin-content { padding: 1rem; }
+    .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* LOADING STATE */
+  .img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream-dark);
+    color: var(--parchment);
+    font-size: 2rem;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--taupe);
+  }
+  .empty-state p { font-style: italic; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--deep-brown);
+    color: var(--cream);
+    padding: 0.85rem 1.25rem;
+    border-radius: var(--radius-lg);
+    font-size: 13px;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 320px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--deep-brown);
+    margin-bottom: 1.25rem;
+  }
+  .section-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* NZ ARTICLE CARD */
+  .nz-only .article-body { opacity: 0.9; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- SCREEN: LOGIN -->
+<!-- ============================================================ -->
+<div id="screen-login" class="screen active">
+  <div class="login-card">
+    <div class="login-ornament">Bienvenue</div>
+    <div class="login-title">Fabien Gonidec<br>&amp; Cécile Henson</div>
+    <div class="login-subtitle">Liste de naissance</div>
+    <div class="login-divider"></div>
+    <div class="login-label">Mot de passe famille</div>
+    <input type="password" class="login-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    <button class="login-btn" onclick="handleLogin()">Accéder à la liste</button>
+    <div class="login-error" id="login-error">Mot de passe incorrect</div>
+    <a class="login-admin-link" onclick="showAdminLogin()">Accès administrateur</a>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN: MAIN APP -->
+<!-- ============================================================ -->
+<div id="screen-app" class="screen">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        Fabien &amp; Cécile
+        <span>Liste de naissance</span>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" onclick="openMessageModal()">Laisser un message</button>
+        <button class="header-btn" onclick="openProposeModal()">Proposer un article</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-pretitle">2026</div>
+    <h1 class="hero-title">Fabien Gonidec<br>&amp; Cécile Henson</h1>
+    <div class="hero-subtitle">Liste de naissance</div>
+    <p class="hero-message">Merci de nous accompagner dans cette belle aventure.</p>
+  </section>
+
+  <!-- CATEGORY NAV -->
+  <nav class="category-nav">
+    <div class="category-nav-inner" id="cat-nav"></div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="content-area">
+
+    <!-- SUMMARY -->
+    <div class="summary-bar" id="summary-bar"></div>
+
+    <!-- ARTICLES -->
+    <div id="articles-container"></div>
+
+    <!-- PROPOSE BANNER -->
+    <div class="propose-banner" onclick="openProposeModal()">
+      <h3>Vous ne trouvez pas ce qu'il vous faut&nbsp;?</h3>
+      <p>Proposez un article et nous le validerons avec plaisir.</p>
+    </div>
+
+    <!-- MESSAGES -->
+    <section class="messages-section">
+      <h2>Messages ❤️</h2>
+      <div class="message-list" id="messages-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN: ADMIN -->
+<!-- ============================================================ -->
+<div id="screen-admin" class="screen">
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="admin-title">
+        Tableau de bord
+        <span class="admin-badge">ADMIN</span>
+      </div>
+      <button class="header-btn" onclick="goBack()" style="color:rgba(250,248,244,0.55);border-color:rgba(250,248,244,0.15)">← Retour à la liste</button>
+    </div>
+  </header>
+  <div class="admin-content">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showAdminTab('tableau')">Vue d'ensemble</button>
+      <button class="admin-tab" onclick="showAdminTab('contributions')">Contributions</button>
+      <button class="admin-tab" onclick="showAdminTab('articles')">Articles</button>
+      <button class="admin-tab" onclick="showAdminTab('messages')">Messages</button>
+      <button class="admin-tab" onclick="showAdminTab('parametres')">Paramètres</button>
+    </div>
+
+    <!-- TABLEAU -->
+    <div id="admin-panel-tableau" class="admin-panel active">
+      <div class="admin-stats-grid" id="admin-stats"></div>
+      <div class="section-title">Activité récente</div>
+      <div class="activity-list" id="admin-activity"></div>
+    </div>
+
+    <!-- CONTRIBUTIONS -->
+    <div id="admin-panel-contributions" class="admin-panel">
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="admin-contribs-table">
+          <thead>
+            <tr>
+              <th>Participant</th>
+              <th>Article</th>
+              <th>Montant</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-contribs-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ARTICLES -->
+    <div id="admin-panel-articles" class="admin-panel">
+      <div class="section-title-row">
+        <div class="section-title" style="margin-bottom:0">Gestion des articles</div>
+        <button class="btn btn-primary" onclick="openAddArticleModal()">+ Ajouter un article</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Catégorie</th>
+              <th>Pays</th>
+              <th>Prix</th>
+              <th>Financé</th>
+              <th>Statut</th>
+              <th>Boutons</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-articles-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div id="admin-panel-messages" class="admin-panel">
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Auteur</th>
+              <th>Message</th>
+              <th>Date</th>
+              <th>Visibilité</th>
+            </tr>
+          </thead>
+          <tbody id="admin-messages-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PARAMETRES -->
+    <div id="admin-panel-parametres" class="admin-panel">
+      <div class="params-grid">
+        <div class="params-section">
+          <h3>Accès</h3>
+          <div class="form-group">
+            <label class="form-label">Mot de passe famille</label>
+            <input class="form-input" id="param-pwd-famille" type="password">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mot de passe administrateur</label>
+            <input class="form-input" id="param-pwd-admin" type="password">
+          </div>
+        </div>
+        <div class="params-section">
+          <h3>Coordonnées bancaires</h3>
+          <div class="form-group">
+            <label class="form-label">Titulaire</label>
+            <input class="form-input" id="param-titulaire">
+          </div>
+          <div class="form-group">
+            <label class="form-label">IBAN</label>
+            <input class="form-input" id="param-iban">
+          </div>
+          <div class="form-group">
+            <label class="form-label">BIC</label>
+            <input class="form-input" id="param-bic">
+          </div>
+        </div>
+        <div class="params-section">
+          <h3>Messages &amp; Taux</h3>
+          <div class="form-group">
+            <label class="form-label">Message de confirmation</label>
+            <textarea class="form-textarea" id="param-msg-confirmation"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Taux de change NZD → EUR</label>
+            <input class="form-input" id="param-taux" type="number" step="0.01">
+            <div class="form-hint">Ex: 0.52 (1 NZD = 0.52 EUR)</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem; display:flex; gap:0.75rem;">
+        <button class="btn btn-primary" onclick="saveParams()">Enregistrer les paramètres</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: PARTICIPATION / RESERVATION -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="modal-participate">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-participate')">×</button>
+    <div class="steps-indicator" id="participate-steps"></div>
+    <div id="participate-content"></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: PROPOSITION D'ARTICLE -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="modal-propose">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-propose')">×</button>
+    <h2>Proposer un article</h2>
+    <p class="modal-subtitle">Votre suggestion sera validée par Fabien &amp; Cécile.</p>
+    <div class="form-group">
+      <label class="form-label">Votre nom</label>
+      <input class="form-input" id="propose-nom" placeholder="ex. Sophie Martin">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nom du produit</label>
+      <input class="form-input" id="propose-produit" placeholder="ex. Transat bébé">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Lien du produit</label>
+      <input class="form-input" id="propose-lien" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Prix estimé</label>
+      <div style="display:flex; gap:0.5rem;">
+        <input class="form-input" id="propose-prix" type="number" placeholder="0" style="flex:2">
+        <select class="form-select" id="propose-devise" style="flex:1">
+          <option value="EUR">EUR</option>
+          <option value="NZD">NZD</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-propose')">Annuler</button>
+      <button class="btn btn-primary" onclick="submitProposal()">Envoyer la suggestion</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: MESSAGE -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="modal-message">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-message')">×</button>
+    <h2>Laisser un message</h2>
+    <p class="modal-subtitle">Votre message apparaîtra sur la liste.</p>
+    <div class="form-group">
+      <label class="form-label">Votre nom</label>
+      <input class="form-input" id="message-nom" placeholder="ex. Sophie Martin">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Votre message</label>
+      <textarea class="form-textarea" id="message-texte" placeholder="Toutes nos félicitations pour cette belle nouvelle…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Visibilité du message</label>
+      <div class="choice-group">
+        <button class="choice-btn selected" id="msg-vis-public" onclick="setMsgVisibility('public')">🌍 Visible de tous</button>
+        <button class="choice-btn" id="msg-vis-private" onclick="setMsgVisibility('private')">🔒 Privé (admin seulement)</button>
+      </div>
+      <div class="form-hint" style="margin-top:0.4rem;">Un message privé ne sera visible que par Fabien &amp; Cécile.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-message')">Annuler</button>
+      <button class="btn btn-primary" onclick="submitMessage()">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: ADD/EDIT ARTICLE (ADMIN) -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="modal-article-form">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-article-form')">×</button>
+    <h2 id="article-form-title">Ajouter un article</h2>
+    <p class="modal-subtitle" id="article-form-subtitle">Nouvel article pour la liste.</p>
+    <input type="hidden" id="article-form-id">
+    <div class="form-group">
+      <label class="form-label">Nom</label>
+      <input class="form-input" id="af-nom">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catégorie</label>
+      <select class="form-select" id="af-categorie">
+        <option value="Vêtements">Vêtements</option>
+        <option value="Mobilier">Mobilier</option>
+        <option value="Transport">Transport</option>
+        <option value="Jouets">Jouets</option>
+        <option value="Autres">Autres</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="af-description" style="min-height:60px;"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Prix</label>
+      <div style="display:flex; gap:0.5rem;">
+        <input class="form-input" id="af-prix" type="number" step="0.01" style="flex:2">
+        <select class="form-select" id="af-devise" style="flex:1">
+          <option value="EUR">EUR</option>
+          <option value="NZD">NZD</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL photo</label>
+      <input class="form-input" id="af-photo">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Lien produit</label>
+      <input class="form-input" id="af-lien">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Statut</label>
+      <select class="form-select" id="af-statut">
+        <option value="Disponible">Disponible</option>
+        <option value="Participation en cours">Participation en cours</option>
+        <option value="Financé">Financé</option>
+        <option value="Réservé">Réservé</option>
+        <option value="Commandé">Commandé</option>
+        <option value="Reçu">Reçu</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pays</label>
+      <select class="form-select" id="af-pays">
+        <option value="FR">France (FR)</option>
+        <option value="NZ">Nouvelle-Zélande (NZ)</option>
+      </select>
+      <div class="form-hint">Les articles NZ ont les boutons activés par défaut.</div>
+    </div>
+    <div class="form-group" id="af-buttons-group">
+      <label class="form-label">Boutons Participer / Acheter</label>
+      <div class="choice-group">
+        <button class="choice-btn" id="af-btn-on" onclick="setAfButtons(true)">✓ Activés</button>
+        <button class="choice-btn selected" id="af-btn-off" onclick="setAfButtons(false)">✗ Désactivés</button>
+      </div>
+      <div class="form-hint" style="margin-top:0.4rem;">Pour les articles NZ, ce réglage est ignoré (toujours activés).</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-article-form')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveArticleForm()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================ -->
+<script>
+// ============================================================
+// DATA STORE
+// ============================================================
+const DB = {
+  params: {
+    pwd_famille: 'bebe2025',
+    pwd_admin: 'admin2025',
+    titulaire: 'Fabien Gonidec',
+    iban: 'FR76 3000 6000 0112 3456 7890 189',
+    bic: 'BNPAFRPPXXX',
+    msg_confirmation: 'Merci beaucoup pour la participation, à très bientôt ❤️',
+    taux: 0.52
+  },
+  articles: [
+    { id: 1, categorie: 'Vêtements', nom: 'Body manches longues Petit Bateau', description: 'Body en coton bio, manches longues, imprimé rayures marines. Taille 3 mois.', prix: 35, devise: 'EUR', montant_finance: 20, photo_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=400&h=300&fit=crop&auto=format', product_url: 'https://www.petit-bateau.fr', statut: 'Participation en cours', pays: 'FR', pending: false, buttonsEnabled: false },
+    { id: 2, categorie: 'Vêtements', nom: 'Pack 5 pyjamas Vertbaudet', description: 'Lot de 5 pyjamas velours doux, fermeture pressions, motifs animaux. Taille naissance.', prix: 65, devise: 'EUR', montant_finance: 65, photo_url: 'https://images.unsplash.com/photo-1594483173041-6b1e35bb2e2c?w=400&h=300&fit=crop&auto=format', product_url: 'https://www.vertbaudet.fr', statut: 'Financé', pays: 'FR', pending: false, buttonsEnabled: false },
+    { id: 3, categorie: 'Mobilier', nom: 'Lit évolutif en bois naturel', description: 'Lit bébé évolutif 60×120 cm, bois de hêtre massif certifié FSC. S\'adapte jusqu\'à 5 ans.', prix: 320, devise: 'EUR', montant_finance: 180, photo_url: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Participation en cours', pays: 'FR', pending: false, buttonsEnabled: false },
+    { id: 4, categorie: 'Transport', nom: 'Poussette combinée Bugaboo Fox', description: 'Système de voyage complet, nacelle + siège auto, compatible avec notre voiture.', prix: 1200, devise: 'NZD', montant_finance: 0, photo_url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=300&fit=crop&auto=format', product_url: 'https://www.bugaboo.com', statut: 'Disponible', pays: 'NZ', pending: false, buttonsEnabled: true },
+    { id: 5, categorie: 'Transport', nom: 'Siège auto Nuna Rava', description: 'Siège auto pivotant groupe 0+/1/2, homologué R129, installation Isofix.', prix: 680, devise: 'NZD', montant_finance: 250, photo_url: 'https://images.unsplash.com/photo-1449247709967-d4461a6a6103?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Participation en cours', pays: 'NZ', pending: false, buttonsEnabled: true },
+    { id: 6, categorie: 'Jouets', nom: 'Tapis d\'éveil musical Lamaze', description: 'Tapis d\'éveil avec arche de jeu, 5 jouets suspendus, sons et lumières. Stimulation sensorielle.', prix: 79, devise: 'EUR', montant_finance: 0, photo_url: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Disponible', pays: 'FR', pending: false, buttonsEnabled: false },
+    { id: 7, categorie: 'Jouets', nom: 'Mobile musical bois Selecta', description: 'Mobile en bois naturel, 5 personnages tissu, mélodie douce. Fixation universelle.', prix: 55, devise: 'EUR', montant_finance: 0, photo_url: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Réservé', pays: 'FR', pending: false, buttonsEnabled: false },
+    { id: 8, categorie: 'Autres', nom: 'Baignoire bébé + table à langer', description: 'Baignoire ergonomique avec réducteur + table à langer pliable. Couleur nude.', prix: 140, devise: 'EUR', montant_finance: 140, photo_url: 'https://images.unsplash.com/photo-1607582486367-7e75cc04ad75?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Commandé', pays: 'FR', pending: false, buttonsEnabled: false },
+    { id: 9, categorie: 'Mobilier', nom: 'Fauteuil d\'allaitement gris', description: 'Fauteuil relax pivotant 360°, rembourrage haute densité, repose-pieds intégré. Parfait pour les nuits.', prix: 390, devise: 'NZD', montant_finance: 390, photo_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop&auto=format', product_url: '#', statut: 'Reçu', pays: 'NZ', pending: false, buttonsEnabled: true }
+  ],
+  contributions: [
+    { id: 1, article_id: 1, participant_id: 1, montant: 15, statut: 'VIREMENT_CONFIRME', date: '2025-02-15' },
+    { id: 2, article_id: 1, participant_id: 2, montant: 5, statut: 'VIREMENT_ANNONCE', date: '2025-02-18' },
+    { id: 3, article_id: 2, participant_id: 3, montant: 65, statut: 'VIREMENT_CONFIRME', date: '2025-02-10' },
+    { id: 4, article_id: 3, participant_id: 4, montant: 100, statut: 'VIREMENT_CONFIRME', date: '2025-02-20' },
+    { id: 5, article_id: 3, participant_id: 1, montant: 80, statut: 'VIREMENT_ANNONCE', date: '2025-02-22' },
+    { id: 6, article_id: 5, participant_id: 2, montant: 250, statut: 'VIREMENT_CONFIRME', date: '2025-02-12' }
+  ],
+  participants: [
+    { id: 1, nom_prenom: 'Sophie Martin', email: 'sophie@example.com', message: '' },
+    { id: 2, nom_prenom: 'Thomas et Julie Durand', email: '', message: 'Plein d\'amour pour vous trois !' },
+    { id: 3, nom_prenom: 'Famille Lefebvre', email: '', message: 'Quelle joie d\'apprendre la nouvelle !' },
+    { id: 4, nom_prenom: 'Marie-Claire Bonnet', email: '', message: '' }
+  ],
+  messages: [
+    { id: 1, participant_id: 2, texte: 'Plein d\'amour pour vous trois ! On est tellement impatients de rencontrer le petit bout.', date: '2025-02-18', remercie: true, public: true },
+    { id: 2, participant_id: 3, texte: 'Quelle joie d\'apprendre la nouvelle ! Toutes nos félicitations, on pense fort à vous depuis la France.', date: '2025-02-10', remercie: true, public: true },
+    { id: 3, participant_id: 1, texte: 'Félicitations ! Ce bébé a de la chance d\'avoir des parents aussi merveilleux. Gros bisous de Bordeaux.', date: '2025-02-21', remercie: false, public: true }
+  ],
+  activity: [
+    { type: 'participation', texte: '<strong>Sophie Martin</strong> a participé à «Body manches longues Petit Bateau»', time: 'Il y a 2 heures' },
+    { type: 'virement', texte: '<strong>Thomas et Julie Durand</strong> ont déclaré un virement pour «Body manches longues»', time: 'Il y a 5 heures' },
+    { type: 'reservation', texte: '<strong>Famille Bernard</strong> a réservé «Mobile musical bois Selecta»', time: 'Hier' },
+    { type: 'proposition', texte: '<strong>Marine Dupuis</strong> a proposé un nouvel article', time: 'Il y a 2 jours' }
+  ]
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentCat = 'Tous';
+let participateState = {};
+let msgVisibility = 'public'; // 'public' or 'private'
+
+function setMsgVisibility(v) {
+  msgVisibility = v;
+  document.getElementById('msg-vis-public').classList.toggle('selected', v === 'public');
+  document.getElementById('msg-vis-private').classList.toggle('selected', v === 'private');
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function handleLogin() {
+  const val = document.getElementById('login-password').value;
+  if (val === DB.params.pwd_famille) {
+    showScreen('screen-app');
+    initApp();
+  } else if (val === DB.params.pwd_admin) {
+    showScreen('screen-admin');
+    initAdmin();
+  } else {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+function showAdminLogin() {
+  // Just allow admin password directly in same field
+  const lbl = document.querySelector('.login-label');
+  lbl.textContent = 'Mot de passe administrateur';
+}
+
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
+
+// ============================================================
+// SCREENS
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = (id === 'screen-login') ? 'flex' : 'block';
+  el.classList.add('active');
+  // Scroll to top of page so the newly revealed screen is visible
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goBack() {
+  showScreen('screen-login');
+  document.getElementById('login-password').value = '';
+}
+
+// ============================================================
+// APP INIT
+// ============================================================
+function initApp() {
+  renderCategoryNav();
+  renderSummary();
+  renderArticles();
+  renderMessages();
+}
+
+// ============================================================
+// CATEGORY NAV
+// ============================================================
+function renderCategoryNav() {
+  const cats = ['Tous', 'Vêtements', 'Mobilier', 'Transport', 'Jouets', 'Autres'];
+  const nav = document.getElementById('cat-nav');
+  nav.innerHTML = cats.map(cat => {
+    const count = cat === 'Tous' ? DB.articles.length : DB.articles.filter(a => a.categorie === cat).length;
+    return `<button class="cat-btn ${cat === currentCat ? 'active' : ''}" onclick="filterCat('${cat}')">
+      ${cat} <span class="cat-count">${count}</span>
+    </button>`;
+  }).join('');
+}
+
+function filterCat(cat) {
+  currentCat = cat;
+  renderCategoryNav();
+  renderArticles();
+}
+
+// ============================================================
+// SUMMARY
+// ============================================================
+function renderSummary() {
+  const total = DB.articles.filter(a => !a.pending).length;
+  const finances = DB.articles.filter(a => a.statut === 'Financé').length;
+  const reserves = DB.articles.filter(a => a.statut === 'Réservé').length;
+  const disponibles = DB.articles.filter(a => ['Disponible', 'Participation en cours'].includes(a.statut)).length;
+  document.getElementById('summary-bar').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">Articles sur la liste</div>
+      <div class="summary-value">${total}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Articles financés</div>
+      <div class="summary-value">${finances}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Articles réservés</div>
+      <div class="summary-value">${reserves}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Encore disponibles</div>
+      <div class="summary-value">${disponibles}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// ARTICLES
+// ============================================================
+function renderArticles() {
+  const filtered = currentCat === 'Tous' ? DB.articles : DB.articles.filter(a => a.categorie === currentCat);
+  const container = document.getElementById('articles-container');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state"><p>Aucun article dans cette catégorie.</p></div>';
+    return;
+  }
+  container.innerHTML = `<div class="articles-grid">${filtered.map(articleCard).join('')}</div>`;
+}
+
+function articleCard(a) {
+  const pct = a.prix > 0 ? Math.min(100, Math.round((a.montant_finance / a.prix) * 100)) : 0;
+  const restant = Math.max(0, a.prix - a.montant_finance);
+  const isNZ = a.pays === 'NZ';
+  const priceEur = isNZ ? Math.round(a.prix * DB.params.taux) : null;
+
+  // Blocked statuses: fully finished items — greyed out, no actions
+  const blocked = ['Financé', 'Réservé', 'Commandé', 'Reçu'].includes(a.statut);
+
+  const badgeClass = {
+    'Disponible': 'badge-disponible',
+    'Participation en cours': 'badge-en-cours',
+    'Financé': 'badge-finance',
+    'Réservé': 'badge-reserve',
+    'Commandé': 'badge-commande',
+    'Reçu': 'badge-recu'
+  }[a.statut] || 'badge-disponible';
+
+  // Progress bar: always shown when there is a price (for all articles with participation possible or already funded)
+  const showProgress = a.prix > 0 && !a.pending;
+  const progressSection = showProgress ? `
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span><strong>${a.montant_finance} ${a.devise}</strong> / ${a.prix} ${a.devise}</span>
+        <span>${pct}%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width:${pct}%"></div>
+      </div>
+    </div>
+  ` : '';
+
+  // FIX 1: Never show participant names on family view
+  // (contributor pills removed entirely from family view)
+
+  const actions = (() => {
+    // Pending proposals: no action buttons
+    if (a.pending) {
+      return `<span class="btn btn-outline" style="cursor:default;opacity:0.7;font-size:11px;">⏳ En attente de confirmation</span>`;
+    }
+    // Blocked statuses: greyed out status label only, no buttons
+    if (blocked) {
+      const label = { 'Financé': 'Financé ✓', 'Réservé': 'Réservé', 'Commandé': 'Commandé', 'Reçu': 'Reçu ✓' }[a.statut] || a.statut;
+      return `<span class="btn btn-outline" style="cursor:default;opacity:0.6;font-size:11px;">${label}</span>`;
+    }
+    if (isNZ) {
+      // NZ: always show Participer + Acheter entièrement (buttons controlled by buttonsEnabled which defaults true for NZ)
+      const hasLink = a.product_url && a.product_url !== '#';
+      return `
+        <button class="btn btn-primary" onclick="openParticipate(${a.id}, false)">Participer</button>
+        <button class="btn btn-gold" onclick="openParticipate(${a.id}, true)">Acheter entièrement</button>
+        ${hasLink ? `<a href="${a.product_url}" target="_blank" class="btn btn-outline">Voir le produit</a>` : ''}
+      `;
+    }
+    // FIX 4: FR items — buttons ONLY if explicitly enabled by admin (buttonsEnabled), never automatic from statut
+    if (a.buttonsEnabled) {
+      const hasLink = a.product_url && a.product_url !== '#';
+      return `
+        <button class="btn btn-primary" onclick="openParticipate(${a.id}, false)">Participer</button>
+        ${restant > 0 ? `<button class="btn btn-gold" onclick="openParticipate(${a.id}, true)">Acheter entièrement</button>` : ''}
+        ${hasLink ? `<a href="${a.product_url}" target="_blank" class="btn btn-outline">Voir le produit</a>` : ''}
+      `;
+    }
+    // FR without buttons: product link only if available
+    const hasLink = a.product_url && a.product_url !== '#';
+    return hasLink ? `<a href="${a.product_url}" target="_blank" class="btn btn-outline">Voir le produit</a>` : '';
+  })();
+
+  // FIX 2: card classes — inactive for blocked/finished items, active-card for interactive ones
+  const isInactive = blocked || a.pending;
+  const cardClass = [
+    'article-card',
+    isInactive ? 'inactive' : 'active-card',
+    isNZ ? 'nz-only' : ''
+  ].filter(Boolean).join(' ');
+
+  return `
+    <div class="${cardClass}">
+      <div class="article-img-wrap">
+        ${isNZ ? '<span class="badge-nz">NZ</span>' : ''}
+        <span class="article-badge ${badgeClass}">${a.statut}</span>
+        <img src="${a.photo_url}" alt="${a.nom}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'img-placeholder\\'>🧸</div>'" style="pointer-events:none;">
+      </div>
+      <div class="article-body">
+        <div class="article-cat">${a.categorie}</div>
+        <div class="article-name">${a.nom}</div>
+        <div class="article-desc">${a.description}</div>
+        <div class="article-price-row">
+          <span class="article-price">${a.prix.toLocaleString('fr-FR')} ${a.devise}</span>
+          ${isNZ && priceEur ? `<span class="article-price-nz">≈ ${priceEur.toLocaleString('fr-FR')} EUR</span>` : ''}
+        </div>
+        ${progressSection}
+        <div class="article-actions">${actions}</div>
+      </div>
+    </div>
+  `;
+}
+
+function getContributors(articleId) {
+  return DB.contributions
+    .filter(c => c.article_id === articleId && c.statut === 'VIREMENT_CONFIRME')
+    .map(c => {
+      if (c.nameVisible === false) return 'Anonyme';
+      const p = DB.participants.find(p => p.id === c.participant_id);
+      return p ? p.nom_prenom : 'Anonyme';
+    });
+}
+
+// ============================================================
+// MESSAGES
+// ============================================================
+function renderMessages() {
+  const list = document.getElementById('messages-list');
+  // Family view: only show public messages
+  const publicMsgs = DB.messages.filter(m => m.public !== false);
+  if (!publicMsgs.length) {
+    list.innerHTML = '<div class="empty-state"><p>Aucun message pour l\'instant.</p></div>';
+    return;
+  }
+  list.innerHTML = publicMsgs.map(m => {
+    const p = DB.participants.find(p => p.id === m.participant_id);
+    const name = p ? p.nom_prenom : 'Anonyme';
+    const d = new Date(m.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    return `
+      <div class="message-card">
+        <div class="message-author">${name}</div>
+        <div class="message-text">${m.texte}</div>
+        <div class="message-date">${d}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// PARTICIPATION FLOW
+// ============================================================
+function openParticipate(articleId, buyAll) {
+  const a = DB.articles.find(x => x.id === articleId);
+  if (!a) return;
+  participateState = { articleId, buyAll, step: 1, nom: '', montant: buyAll ? a.prix - a.montant_finance : 0, wantMessage: null, message: '', nameVisible: true, messageVisible: true };
+  renderParticipateStep();
+  openModal('modal-participate');
+}
+
+function renderParticipateStep() {
+  const a = DB.articles.find(x => x.id === participateState.articleId);
+  const totalSteps = 6;
+  const s = participateState.step;
+
+  // Steps indicator
+  document.getElementById('participate-steps').innerHTML =
+    Array.from({ length: totalSteps }, (_, i) =>
+      `<div class="step-dot ${i + 1 < s ? 'done' : i + 1 === s ? 'active' : ''}"></div>`
+    ).join('');
+
+  const content = document.getElementById('participate-content');
+  const restant = Math.max(0, a.prix - a.montant_finance);
+
+  if (s === 1) {
+    content.innerHTML = `
+      <h2>${participateState.buyAll ? 'Acheter entièrement' : 'Participer'}</h2>
+      <p class="modal-subtitle">${a.nom}</p>
+      <div class="form-group">
+        <label class="form-label">Votre nom et prénom(s) *</label>
+        <input class="form-input" id="p-nom" placeholder="ex. Sophie Martin" value="${participateState.nom}">
+        <div class="form-hint">Exemples : Sophie Martin · Thomas et Julie Durand · Famille Dupont</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Visibilité de votre nom</label>
+        <div class="choice-group">
+          <button class="choice-btn ${participateState.nameVisible ? 'selected' : ''}" onclick="participateState.nameVisible=true;document.querySelector('#pnv-public').classList.add('selected');document.querySelector('#pnv-private').classList.remove('selected');" id="pnv-public">👤 Visible sur la liste</button>
+          <button class="choice-btn ${!participateState.nameVisible ? 'selected' : ''}" onclick="participateState.nameVisible=false;document.querySelector('#pnv-private').classList.add('selected');document.querySelector('#pnv-public').classList.remove('selected');" id="pnv-private">🔒 Anonyme</button>
+        </div>
+        <div class="form-hint" style="margin-top:0.4rem;">Si anonyme, votre nom n'apparaîtra pas sur la liste publique.</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('modal-participate')">Annuler</button>
+        <button class="btn btn-primary" onclick="participateNext()">Suivant →</button>
+      </div>
+    `;
+  } else if (s === 2) {
+    content.innerHTML = `
+      <h2>Montant</h2>
+      <p class="modal-subtitle">${a.nom}</p>
+      <div class="amount-remaining-info">
+        Reste à financer : <strong>${restant} ${a.devise}</strong>
+        (financé à ${Math.round((a.montant_finance / a.prix) * 100)}%)
+      </div>
+      ${participateState.buyAll ? `
+        <div class="form-group">
+          <label class="form-label">Montant total</label>
+          <input class="form-input" value="${restant} ${a.devise}" disabled>
+        </div>
+      ` : `
+        <div class="form-group">
+          <label class="form-label">Votre participation (${a.devise})</label>
+          <input class="form-input" id="p-montant" type="number" min="1" max="${restant}" value="${participateState.montant || ''}">
+        </div>
+      `}
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="participatePrev()">← Retour</button>
+        <button class="btn btn-primary" onclick="participateNext()">Suivant →</button>
+      </div>
+    `;
+  } else if (s === 3) {
+    content.innerHTML = `
+      <h2>Coordonnées bancaires</h2>
+      <p class="modal-subtitle">Effectuez un virement vers le compte suivant.</p>
+      <button class="btn btn-secondary" style="margin-bottom:1rem;" onclick="document.getElementById('iban-reveal').style.display='block';this.style.display='none'">Afficher les coordonnées bancaires</button>
+      <div id="iban-reveal" style="display:none">
+        <div class="iban-box">
+          <div class="iban-row">
+            <span class="iban-key">Titulaire</span>
+            <span class="iban-val">${DB.params.titulaire}</span>
+          </div>
+          <div class="iban-row">
+            <span class="iban-key">IBAN</span>
+            <span class="iban-val">${DB.params.iban}</span>
+          </div>
+          <div class="iban-row">
+            <span class="iban-key">BIC</span>
+            <span class="iban-val">${DB.params.bic}</span>
+          </div>
+        </div>
+        <div class="form-hint" style="margin-top:0.5rem;">Montant à virer : <strong>${participateState.montant} ${a.devise}</strong></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="participatePrev()">← Retour</button>
+        <button class="btn btn-primary" onclick="participateNext()">Virement effectué ✓</button>
+      </div>
+    `;
+  } else if (s === 4) {
+    content.innerHTML = `
+      <h2>Un message ?</h2>
+      <p class="modal-subtitle">Souhaitez-vous laisser un message à Fabien &amp; Cécile ?</p>
+      <div class="choice-group" style="margin-bottom:1.25rem;">
+        <button class="choice-btn ${participateState.wantMessage === true ? 'selected' : ''}" onclick="participateState.wantMessage=true;renderParticipateStep()">Oui</button>
+        <button class="choice-btn ${participateState.wantMessage === false ? 'selected' : ''}" onclick="participateState.wantMessage=false;renderParticipateStep()">Non</button>
+      </div>
+      ${participateState.wantMessage ? `
+        <div class="form-group">
+          <textarea class="form-textarea" id="p-message" placeholder="Votre message…">${participateState.message}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Visibilité du message</label>
+          <div class="choice-group">
+            <button class="choice-btn ${participateState.messageVisible !== false ? 'selected' : ''}" id="pmv-public" onclick="participateState.messageVisible=true;document.querySelector('#pmv-public').classList.add('selected');document.querySelector('#pmv-private').classList.remove('selected');">🌍 Visible de tous</button>
+            <button class="choice-btn ${participateState.messageVisible === false ? 'selected' : ''}" id="pmv-private" onclick="participateState.messageVisible=false;document.querySelector('#pmv-private').classList.add('selected');document.querySelector('#pmv-public').classList.remove('selected');">🔒 Privé (admin seulement)</button>
+          </div>
+          <div class="form-hint" style="margin-top:0.4rem;">Un message privé ne sera visible que par Fabien &amp; Cécile.</div>
+        </div>
+      ` : ''}
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="participatePrev()">← Retour</button>
+        <button class="btn btn-primary" onclick="participateNext()" ${participateState.wantMessage === null ? 'disabled' : ''}>Continuer →</button>
+      </div>
+    `;
+  } else if (s === 5) {
+    // Save & show confirmation
+    saveParticipation();
+    content.innerHTML = `
+      <div class="confirmation-box">
+        <div class="confirmation-heart">❤️</div>
+        <div class="confirmation-text">${DB.params.msg_confirmation}</div>
+      </div>
+      <div class="modal-actions" style="justify-content:center; margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="closeModal('modal-participate'); refreshApp()">Fermer</button>
+      </div>
+    `;
+    document.getElementById('participate-steps').innerHTML =
+      Array.from({ length: 5 }, () => `<div class="step-dot done"></div>`).join('');
+  }
+}
+
+function participateNext() {
+  const s = participateState.step;
+  const a = DB.articles.find(x => x.id === participateState.articleId);
+
+  if (s === 1) {
+    const nom = document.getElementById('p-nom').value.trim();
+    if (!nom) { showToast('Veuillez indiquer votre nom.'); return; }
+    participateState.nom = nom;
+  } else if (s === 2) {
+    if (!participateState.buyAll) {
+      const m = parseFloat(document.getElementById('p-montant').value);
+      if (!m || m <= 0) { showToast('Veuillez saisir un montant valide.'); return; }
+      const restant = Math.max(0, a.prix - a.montant_finance);
+      if (m > restant) { showToast(`Le montant ne peut pas dépasser ${restant} ${a.devise}.`); return; }
+      participateState.montant = m;
+    } else {
+      participateState.montant = Math.max(0, a.prix - a.montant_finance);
+    }
+  } else if (s === 4) {
+    if (participateState.wantMessage) {
+      const msg = document.getElementById('p-message').value.trim();
+      participateState.message = msg;
+    }
+  }
+  participateState.step++;
+  renderParticipateStep();
+}
+
+function participatePrev() {
+  participateState.step--;
+  renderParticipateStep();
+}
+
+function saveParticipation() {
+  const a = DB.articles.find(x => x.id === participateState.articleId);
+
+  // Add or find participant
+  let p = DB.participants.find(x => x.nom_prenom.toLowerCase() === participateState.nom.toLowerCase());
+  if (!p) {
+    p = { id: Date.now(), nom_prenom: participateState.nom, email: '', message: participateState.message };
+    DB.participants.push(p);
+  }
+
+  // Add contribution
+  DB.contributions.push({
+    id: Date.now(),
+    article_id: participateState.articleId,
+    participant_id: p.id,
+    montant: participateState.montant,
+    statut: 'VIREMENT_ANNONCE',
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  // Add message if needed
+  if (participateState.wantMessage && participateState.message) {
+    DB.messages.push({
+      id: Date.now(),
+      participant_id: p.id,
+      texte: participateState.message,
+      date: new Date().toISOString().split('T')[0],
+      remercie: false,
+      public: participateState.messageVisible !== false
+    });
+  }
+
+  // Store nameVisible preference on the contribution
+  const lastContrib = DB.contributions[DB.contributions.length - 1];
+  if (lastContrib) lastContrib.nameVisible = participateState.nameVisible !== false;
+
+  // If buying entirely, mark as reserved
+  if (participateState.buyAll) {
+    a.statut = 'Réservé';
+  } else {
+    // Update funded amount if confirmed (demo: mark as announced)
+    // In real scenario admin confirms
+    const totalAnnounced = DB.contributions
+      .filter(c => c.article_id === a.id && c.statut !== 'EN_ATTENTE')
+      .reduce((sum, c) => sum + c.montant, 0);
+    a.montant_finance = Math.min(a.prix, totalAnnounced);
+    if (a.montant_finance >= a.prix) a.statut = 'Financé';
+    else if (a.montant_finance > 0) a.statut = 'Participation en cours';
+  }
+
+  // Activity log
+  DB.activity.unshift({
+    type: participateState.buyAll ? 'reservation' : 'participation',
+    texte: `<strong>${participateState.nom}</strong> ${participateState.buyAll ? 'a réservé' : 'a participé à'} «${a.nom}»`,
+    time: 'À l\'instant'
+  });
+}
+
+function refreshApp() {
+  renderSummary();
+  renderArticles();
+  renderMessages();
+}
+
+// ============================================================
+// PROPOSE ARTICLE
+// ============================================================
+function openProposeModal() { openModal('modal-propose'); }
+
+function submitProposal() {
+  const nom = document.getElementById('propose-nom').value.trim();
+  const produit = document.getElementById('propose-produit').value.trim();
+  const lien = document.getElementById('propose-lien').value.trim();
+  if (!nom || !produit) { showToast('Veuillez remplir les champs obligatoires.'); return; }
+
+  const newArticle = {
+    id: Date.now(),
+    categorie: 'Autres',
+    nom: produit,
+    description: 'Article proposé par ' + nom + ' — en attente de validation.',
+    prix: parseFloat(document.getElementById('propose-prix').value) || 0,
+    devise: document.getElementById('propose-devise').value,
+    montant_finance: 0,
+    photo_url: '',
+    product_url: lien || '#',
+    statut: 'Disponible',
+    pays: 'FR',
+    pending: true,
+    buttonsEnabled: false
+  };
+  DB.articles.push(newArticle);
+  DB.activity.unshift({ type: 'proposition', texte: `<strong>${nom}</strong> a proposé «${produit}»`, time: 'À l\'instant' });
+
+  closeModal('modal-propose');
+  showToast('Merci pour votre suggestion ! Elle sera validée prochainement.');
+  document.getElementById('propose-nom').value = '';
+  document.getElementById('propose-produit').value = '';
+  document.getElementById('propose-lien').value = '';
+  document.getElementById('propose-prix').value = '';
+}
+
+// ============================================================
+// MESSAGE
+// ============================================================
+function openMessageModal() { openModal('modal-message'); }
+
+function submitMessage() {
+  const nom = document.getElementById('message-nom').value.trim();
+  const texte = document.getElementById('message-texte').value.trim();
+  if (!nom || !texte) { showToast('Veuillez remplir tous les champs.'); return; }
+
+  let p = DB.participants.find(x => x.nom_prenom.toLowerCase() === nom.toLowerCase());
+  if (!p) {
+    p = { id: Date.now(), nom_prenom: nom, email: '', message: texte };
+    DB.participants.push(p);
+  }
+  DB.messages.push({ id: Date.now(), participant_id: p.id, texte, date: new Date().toISOString().split('T')[0], remercie: false, public: msgVisibility === 'public' });
+
+  closeModal('modal-message');
+  showToast('Votre message a bien été envoyé. Merci !');
+  msgVisibility = 'public';
+  renderMessages();
+  document.getElementById('message-nom').value = '';
+  document.getElementById('message-texte').value = '';
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function initAdmin() {
+  renderAdminStats();
+  renderAdminActivity();
+  renderAdminContribs();
+  renderAdminArticles();
+  renderAdminMessages();
+  loadParams();
+}
+
+function showAdminTab(tab) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('admin-panel-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function renderAdminStats() {
+  const totalFinance = DB.contributions.filter(c => c.statut === 'VIREMENT_CONFIRME').reduce((s, c) => s + c.montant, 0);
+  const enAttente = DB.contributions.filter(c => c.statut === 'VIREMENT_ANNONCE').length;
+  const finances = DB.articles.filter(a => a.statut === 'Financé').length;
+  const reserves = DB.articles.filter(a => a.statut === 'Réservé').length;
+  const commandes = DB.articles.filter(a => a.statut === 'Commandé').length;
+  const recus = DB.articles.filter(a => a.statut === 'Reçu').length;
+
+  document.getElementById('admin-stats').innerHTML = `
+    <div class="admin-stat"><div class="admin-stat-label">Total financé confirmé</div><div class="admin-stat-value accent">${totalFinance.toLocaleString('fr-FR')} €</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Virements en attente</div><div class="admin-stat-value">${enAttente}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles financés</div><div class="admin-stat-value">${finances}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles réservés</div><div class="admin-stat-value">${reserves}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles commandés</div><div class="admin-stat-value">${commandes}</div></div>
+    <div class="admin-stat"><div class="admin-stat-label">Articles reçus</div><div class="admin-stat-value">${recus}</div></div>
+  `;
+}
+
+function renderAdminActivity() {
+  document.getElementById('admin-activity').innerHTML = DB.activity.slice(0, 10).map(a => `
+    <div class="activity-item">
+      <div class="activity-dot dot-${a.type}"></div>
+      <div>
+        <div class="activity-text">${a.texte}</div>
+        <div class="activity-time">${a.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAdminContribs() {
+  const tbody = document.getElementById('admin-contribs-body');
+  tbody.innerHTML = DB.contributions.map(c => {
+    const p = DB.participants.find(x => x.id === c.participant_id);
+    const a = DB.articles.find(x => x.id === c.article_id);
+    const statusClass = { 'EN_ATTENTE': 's-attente', 'VIREMENT_ANNONCE': 's-annonce', 'VIREMENT_CONFIRME': 's-confirme' }[c.statut] || 's-attente';
+    const statusLabel = { 'EN_ATTENTE': 'En attente', 'VIREMENT_ANNONCE': 'Annoncé', 'VIREMENT_CONFIRME': 'Confirmé' }[c.statut];
+    const remercieLabel = c.remercie ? '✓ Remercié' : 'À remercier';
+    const remercieClass = c.remercie ? 'btn-sm-success' : 'btn-sm-neutral';
+    return `
+      <tr>
+        <td>${p ? p.nom_prenom : '—'}</td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a ? a.nom : '—'}</td>
+        <td style="font-weight:500;">${c.montant} ${a ? a.devise : '€'}</td>
+        <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+        <td style="color:var(--taupe)">${c.date}</td>
+        <td style="display:flex;gap:4px;flex-wrap:wrap;">
+          ${c.statut !== 'VIREMENT_CONFIRME'
+            ? `<button class="btn-sm btn-sm-neutral" onclick="confirmerVirement(${c.id})">Confirmer à remercier</button>
+               <button class="btn-sm btn-sm-success" onclick="confirmerEtRemercier(${c.id})">Confirmer &amp; Remercier</button>`
+            : `<button class="btn-sm ${remercieClass}" onclick="toggleRemerciementContrib(${c.id})">${remercieLabel}</button>`}
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function confirmerVirement(contribId) {
+  const c = DB.contributions.find(x => x.id === contribId);
+  if (!c) return;
+  c.statut = 'VIREMENT_CONFIRME';
+  c.remercie = false;
+  const a = DB.articles.find(x => x.id === c.article_id);
+  if (a) {
+    const totalConfirme = DB.contributions.filter(x => x.article_id === a.id && x.statut === 'VIREMENT_CONFIRME').reduce((s, x) => s + x.montant, 0);
+    a.montant_finance = Math.min(a.prix, totalConfirme);
+    if (a.montant_finance >= a.prix && a.statut !== 'Réservé') a.statut = 'Financé';
+  }
+  renderAdminContribs();
+  renderAdminStats();
+  showToast('Virement confirmé. Pensez à remercier !');
+}
+
+function confirmerEtRemercier(contribId) {
+  const c = DB.contributions.find(x => x.id === contribId);
+  if (!c) return;
+  c.statut = 'VIREMENT_CONFIRME';
+  c.remercie = true;
+  const a = DB.articles.find(x => x.id === c.article_id);
+  if (a) {
+    const totalConfirme = DB.contributions.filter(x => x.article_id === a.id && x.statut === 'VIREMENT_CONFIRME').reduce((s, x) => s + x.montant, 0);
+    a.montant_finance = Math.min(a.prix, totalConfirme);
+    if (a.montant_finance >= a.prix && a.statut !== 'Réservé') a.statut = 'Financé';
+  }
+  renderAdminContribs();
+  renderAdminStats();
+  showToast('Virement confirmé et participant remercié ✓');
+}
+
+function toggleRemerciementContrib(contribId) {
+  const c = DB.contributions.find(x => x.id === contribId);
+  if (c) { c.remercie = !c.remercie; renderAdminContribs(); showToast(c.remercie ? 'Marqué comme remercié.' : 'Remerciement retiré.'); }
+}
+
+function renderAdminArticles() {
+  document.getElementById('admin-articles-body').innerHTML = DB.articles.map(a => {
+    const isPending = !!a.pending;
+    const isNZ = a.pays === 'NZ';
+    // Boutons toggle: always available for FR non-pending items; NZ always on
+    const boutonsCell = isNZ
+      ? `<span style="font-size:11px;color:var(--taupe)">Toujours actifs (NZ)</span>`
+      : isPending
+        ? `<span style="font-size:11px;color:var(--taupe)">N/A</span>`
+        : `<button class="btn-sm ${a.buttonsEnabled ? 'btn-sm-success' : 'btn-sm-neutral'}" onclick="toggleArticleButtons(${a.id})">
+            ${a.buttonsEnabled ? '✓ Activés' : '✗ Désactivés'}
+          </button>`;
+    const actionsCell = isPending
+      ? `<button class="btn-sm btn-sm-success" onclick="approveProposal(${a.id})">✓ Approuver</button>
+         <button class="btn-sm btn-sm-danger" onclick="deleteArticle(${a.id})">✗ Rejeter</button>`
+      : `<button class="btn-sm btn-sm-neutral" onclick="editArticle(${a.id})">Modifier</button>
+         <button class="btn-sm btn-sm-danger" onclick="deleteArticle(${a.id})">Supprimer</button>`;
+    return `
+      <tr ${isPending ? 'style="background:rgba(184,149,106,0.06);"' : ''}>
+        <td style="font-weight:500;">${a.nom} ${isPending ? '<span style="font-size:10px;background:rgba(184,149,106,0.2);color:#8B6B40;padding:1px 5px;border-radius:10px;margin-left:4px;">En attente</span>' : ''}</td>
+        <td>${a.categorie}</td>
+        <td><span style="font-size:11px;background:${isNZ ? 'var(--deep-brown)' : 'var(--cream-dark)'};color:${isNZ ? 'var(--cream)' : 'var(--taupe)'};padding:1px 6px;border-radius:3px;">${isNZ ? 'NZ' : 'FR'}</span></td>
+        <td>${a.prix} ${a.devise}</td>
+        <td>${a.montant_finance} ${a.devise}</td>
+        <td>
+          ${isPending
+            ? `<span class="status-pill s-attente">En attente</span>`
+            : `<select class="form-select" style="padding:0.25rem 0.5rem;font-size:12px;background:var(--cream);" onchange="changeArticleStatus(${a.id}, this.value)">
+                ${['Disponible','Participation en cours','Financé','Réservé','Commandé','Reçu'].map(s => `<option value="${s}" ${a.statut === s ? 'selected' : ''}>${s}</option>`).join('')}
+              </select>`}
+        </td>
+        <td>${boutonsCell}</td>
+        <td style="display:flex;gap:4px;flex-wrap:wrap;">${actionsCell}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function toggleArticleButtons(id) {
+  const a = DB.articles.find(x => x.id === id);
+  if (a) {
+    a.buttonsEnabled = !a.buttonsEnabled;
+    renderAdminArticles();
+    showToast(`Boutons ${a.buttonsEnabled ? 'activés' : 'désactivés'} pour «${a.nom}».`);
+  }
+}
+
+function approveProposal(id) {
+  const a = DB.articles.find(x => x.id === id);
+  if (a) {
+    a.pending = false;
+    a.statut = 'Disponible';
+    renderAdminArticles();
+    showToast(`«${a.nom}» approuvé et ajouté à la liste.`);
+  }
+}
+
+function changeArticleStatus(id, newStatus) {
+  const a = DB.articles.find(x => x.id === id);
+  if (a) { a.statut = newStatus; showToast('Statut mis à jour.'); }
+}
+
+function deleteArticle(id) {
+  if (!confirm('Supprimer cet article ?')) return;
+  DB.articles = DB.articles.filter(a => a.id !== id);
+  renderAdminArticles();
+  renderAdminStats();
+  showToast('Article supprimé.');
+}
+
+function setAfButtons(enabled) {
+  const on = document.getElementById('af-btn-on');
+  const off = document.getElementById('af-btn-off');
+  if (!on || !off) return;
+  on.classList.toggle('selected', enabled);
+  off.classList.toggle('selected', !enabled);
+}
+
+function editArticle(id) {
+  const a = DB.articles.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('article-form-title').textContent = 'Modifier l\'article';
+  document.getElementById('article-form-subtitle').textContent = a.nom;
+  document.getElementById('article-form-id').value = id;
+  document.getElementById('af-nom').value = a.nom;
+  document.getElementById('af-categorie').value = a.categorie;
+  document.getElementById('af-description').value = a.description;
+  document.getElementById('af-prix').value = a.prix;
+  document.getElementById('af-devise').value = a.devise;
+  document.getElementById('af-photo').value = a.photo_url;
+  document.getElementById('af-lien').value = a.product_url;
+  document.getElementById('af-statut').value = a.statut;
+  document.getElementById('af-pays').value = a.pays || (a.devise === 'NZD' ? 'NZ' : 'FR');
+  setAfButtons(!!a.buttonsEnabled);
+  openModal('modal-article-form');
+}
+
+function openAddArticleModal() {
+  document.getElementById('article-form-title').textContent = 'Ajouter un article';
+  document.getElementById('article-form-subtitle').textContent = 'Nouvel article pour la liste.';
+  document.getElementById('article-form-id').value = '';
+  ['af-nom','af-description','af-photo','af-lien'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('af-prix').value = '';
+  document.getElementById('af-categorie').value = 'Vêtements';
+  document.getElementById('af-devise').value = 'EUR';
+  document.getElementById('af-statut').value = 'Disponible';
+  document.getElementById('af-pays').value = 'FR';
+  setAfButtons(false);
+  openModal('modal-article-form');
+}
+
+function saveArticleForm() {
+  const id = document.getElementById('article-form-id').value;
+  const selectedPays = document.getElementById('af-pays').value;
+  const btnOn = document.getElementById('af-btn-on').classList.contains('selected');
+  const data = {
+    nom: document.getElementById('af-nom').value.trim(),
+    categorie: document.getElementById('af-categorie').value,
+    description: document.getElementById('af-description').value.trim(),
+    prix: parseFloat(document.getElementById('af-prix').value) || 0,
+    devise: document.getElementById('af-devise').value,
+    photo_url: document.getElementById('af-photo').value.trim(),
+    product_url: document.getElementById('af-lien').value.trim() || '#',
+    statut: document.getElementById('af-statut').value,
+    pays: selectedPays,
+    // NZ articles always have buttons enabled; FR respects the explicit toggle
+    buttonsEnabled: selectedPays === 'NZ' ? true : btnOn
+  };
+  if (!data.nom) { showToast('Veuillez saisir un nom.'); return; }
+
+  if (id) {
+    const a = DB.articles.find(x => x.id == id);
+    if (a) Object.assign(a, data);
+  } else {
+    DB.articles.push({ id: Date.now(), montant_finance: 0, pending: false, ...data });
+  }
+  closeModal('modal-article-form');
+  renderAdminArticles();
+  showToast('Article enregistré.');
+}
+
+function renderAdminMessages() {
+  document.getElementById('admin-messages-body').innerHTML = DB.messages.map(m => {
+    const p = DB.participants.find(x => x.id === m.participant_id);
+    const d = new Date(m.date).toLocaleDateString('fr-FR');
+    return `
+      <tr>
+        <td style="font-weight:500;">${p ? p.nom_prenom : '—'}</td>
+        <td style="font-style:italic;color:var(--warm-brown);">${m.texte}</td>
+        <td style="color:var(--taupe)">${d}</td>
+        <td>
+          <button class="btn-sm ${m.public !== false ? 'btn-sm-success' : 'btn-sm-neutral'}" onclick="toggleMessageVisibility(${m.id})">
+            ${m.public !== false ? '🌍 Visible' : '🔒 Privé'}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function toggleMessageVisibility(id) {
+  const m = DB.messages.find(x => x.id === id);
+  if (m) {
+    m.public = m.public === false ? true : false;
+    renderAdminMessages();
+    renderMessages();
+    showToast(m.public !== false ? 'Message rendu visible de tous.' : 'Message rendu privé.');
+  }
+}
+
+function loadParams() {
+  document.getElementById('param-pwd-famille').value = DB.params.pwd_famille;
+  document.getElementById('param-pwd-admin').value = DB.params.pwd_admin;
+  document.getElementById('param-titulaire').value = DB.params.titulaire;
+  document.getElementById('param-iban').value = DB.params.iban;
+  document.getElementById('param-bic').value = DB.params.bic;
+  document.getElementById('param-msg-confirmation').value = DB.params.msg_confirmation;
+  document.getElementById('param-taux').value = DB.params.taux;
+}
+
+function saveParams() {
+  DB.params.pwd_famille = document.getElementById('param-pwd-famille').value || DB.params.pwd_famille;
+  DB.params.pwd_admin = document.getElementById('param-pwd-admin').value || DB.params.pwd_admin;
+  DB.params.titulaire = document.getElementById('param-titulaire').value;
+  DB.params.iban = document.getElementById('param-iban').value;
+  DB.params.bic = document.getElementById('param-bic').value;
+  DB.params.msg_confirmation = document.getElementById('param-msg-confirmation').value;
+  DB.params.taux = parseFloat(document.getElementById('param-taux').value) || 0.52;
+  showToast('Paramètres enregistrés avec succès.');
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ============================================================
+// INIT: show login on load
+// ============================================================
+document.querySelectorAll('.screen').forEach(s => {
+  s.style.display = 'none';
+  s.classList.remove('active');
+});
+document.getElementById('screen-login').style.display = 'flex';
+document.getElementById('screen-login').classList.add('active');
+</script>
+</body>
+</html>
