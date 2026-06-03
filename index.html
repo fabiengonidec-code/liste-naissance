@@ -1448,6 +1448,14 @@ let currentCat = 'Tous';
 let participateState = {};
 let msgVisibility = 'public';
 
+// Expose participateState to window so inline onclick handlers work from ES module scope
+function setParticipateNameVisible(v) { participateState.nameVisible = v; renderParticipateStep(); }
+function setParticipateWantMessage(v) { participateState.wantMessage = v; renderParticipateStep(); }
+function setParticipateMessageVisible(v) { participateState.messageVisible = v; renderParticipateStep(); }
+window.setParticipateNameVisible    = setParticipateNameVisible;
+window.setParticipateWantMessage    = setParticipateWantMessage;
+window.setParticipateMessageVisible = setParticipateMessageVisible;
+
 // ============================================================
 // BOOTSTRAP — seed params if first run
 // ============================================================
@@ -1784,9 +1792,9 @@ function renderParticipateStep() {
         <label class="form-label">Visibilité de votre nom</label>
         <div class="choice-group">
           <button class="choice-btn ${participateState.nameVisible ? 'selected' : ''}" 
-            onclick="participateState.nameVisible=true;renderParticipateStep()">👤 Visible sur la liste</button>
+            onclick="setParticipateNameVisible(true)">👤 Visible sur la liste</button>
           <button class="choice-btn ${!participateState.nameVisible ? 'selected' : ''}" 
-            onclick="participateState.nameVisible=false;renderParticipateStep()">🔒 Anonyme</button>
+            onclick="setParticipateNameVisible(false)">🔒 Anonyme</button>
         </div>
       </div>
       <div class="modal-actions">
@@ -1838,9 +1846,9 @@ function renderParticipateStep() {
       <p class="modal-subtitle">Souhaitez-vous laisser un message à Fabien &amp; Cécile ?</p>
       <div class="choice-group" style="margin-bottom:1.25rem;">
         <button class="choice-btn ${participateState.wantMessage === true  ? 'selected' : ''}" 
-          onclick="participateState.wantMessage=true;renderParticipateStep()">Oui</button>
+          onclick="setParticipateWantMessage(true)">Oui</button>
         <button class="choice-btn ${participateState.wantMessage === false ? 'selected' : ''}" 
-          onclick="participateState.wantMessage=false;renderParticipateStep()">Non</button>
+          onclick="setParticipateWantMessage(false)">Non</button>
       </div>
       ${participateState.wantMessage ? `
         <div class="form-group">
@@ -1850,9 +1858,9 @@ function renderParticipateStep() {
           <label class="form-label">Visibilité du message</label>
           <div class="choice-group">
             <button class="choice-btn ${participateState.messageVisible !== false ? 'selected' : ''}" 
-              onclick="participateState.messageVisible=true;renderParticipateStep()">🌍 Visible de tous</button>
+              onclick="setParticipateMessageVisible(true)">🌍 Visible de tous</button>
             <button class="choice-btn ${participateState.messageVisible === false ? 'selected' : ''}" 
-              onclick="participateState.messageVisible=false;renderParticipateStep()">🔒 Privé</button>
+              onclick="setParticipateMessageVisible(false)">🔒 Privé</button>
           </div>
         </div>` : ''}
       <div class="modal-actions">
