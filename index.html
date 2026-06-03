@@ -473,6 +473,24 @@
     border-radius: 2px;
     transition: width 0.5s ease;
   }
+  .progress-bar-pending {
+    height: 100%;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(184,149,106,0.35) 0px,
+      rgba(184,149,106,0.35) 6px,
+      rgba(184,149,106,0.15) 6px,
+      rgba(184,149,106,0.15) 12px
+    );
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+  .progress-pending-label {
+    font-size: 10.5px;
+    color: var(--taupe);
+    font-style: italic;
+    margin-top: 0.25rem;
+  }
   .contributors {
     display: flex;
     flex-wrap: wrap;
@@ -1650,8 +1668,18 @@ function renderArticles() {
 }
 
 function articleCard(a) {
-  const pct     = a.prix > 0 ? Math.min(100, Math.round(((a.montant_finance||0) / a.prix) * 100)) : 0;
-  const restant = Math.max(0, a.prix - (a.montant_finance||0));
+  // Confirmed amount stored on article; pending = sum of VIREMENT_ANNONCE contributions
+  const confirme = a.montant_finance || 0;
+  const annonce  = contributionsArr()
+    .filter(c => c.article_id === a._fbKey && c.statut === 'VIREMENT_ANNONCE')
+    .reduce((s, c) => s + (c.montant || 0), 0);
+  const totalVisible = Math.min(a.prix || 0, confirme + annonce);
+
+  const pctConfirme = a.prix > 0 ? Math.min(100, Math.round((confirme / a.prix) * 100)) : 0;
+  const pctAnnonce  = a.prix > 0 ? Math.min(100 - pctConfirme, Math.round((annonce  / a.prix) * 100)) : 0;
+  const pctTotal    = pctConfirme + pctAnnonce;
+
+  const restant = Math.max(0, a.prix - totalVisible);
   const isNZ    = a.pays === 'NZ';
   const priceEur = isNZ ? Math.round(a.prix * (DB.params.taux||0.52)) : null;
 
@@ -1671,12 +1699,14 @@ function articleCard(a) {
   const progressSection = showProgress ? `
     <div class="progress-wrap">
       <div class="progress-info">
-        <span><strong>${a.montant_finance||0} ${a.devise}</strong> / ${a.prix} ${a.devise}</span>
-        <span>${pct}%</span>
+        <span><strong>${totalVisible} ${a.devise}</strong> / ${a.prix} ${a.devise}</span>
+        <span>${pctTotal}%</span>
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" style="width:${pct}%"></div>
+      <div class="progress-bar-bg" style="position:relative;display:flex;">
+        <div class="progress-bar-fill"   style="width:${pctConfirme}%"></div>
+        <div class="progress-bar-pending" style="width:${pctAnnonce}%"></div>
       </div>
+      ${annonce > 0 ? `<div class="progress-pending-label">⏳ ${annonce} ${a.devise} en attente de confirmation</div>` : ''}
     </div>` : '';
 
   const actions = (() => {
@@ -1954,9 +1984,11 @@ async function saveParticipation() {
     });
   }
 
-  // Update article status
-  const newStatus = participateState.buyAll ? 'Réservé' : (a.statut === 'Disponible' ? 'Participation en cours' : a.statut);
+  // Update article status immediately (montant_finance stays confirmed-only)
+  const newStatus = participateState.buyAll ? 'Réservé'
+    : (a.statut === 'Disponible' ? 'Participation en cours' : a.statut);
   await update(ref(db, `articles/${fbKey}`), { statut: newStatus });
+  // No need to call updateArticleFinance here — bar is computed live from contributionsArr()
 
   // Activity log
   const displayName = participateState.nameVisible !== false ? participateState.nom : 'Anonyme';
@@ -2184,17 +2216,30 @@ async function deleteContrib(fbKey) {
 }
 window.deleteContrib = deleteContrib;
 
-// Recompute montant_finance for an article from confirmed contribs
+// Recompute montant_finance for an article from confirmed contribs only.
+// Pending (VIREMENT_ANNONCE) are shown live via contributionsArr() in articleCard.
 async function updateArticleFinance(articleFbKey) {
-  const contribs = contributionsArr().filter(c => c.article_id === articleFbKey && c.statut === 'VIREMENT_CONFIRME');
+  const allContribs     = contributionsArr().filter(c => c.article_id === articleFbKey);
+  const confirmedContribs = allContribs.filter(c => c.statut === 'VIREMENT_CONFIRME');
+  const announcedContribs = allContribs.filter(c => c.statut === 'VIREMENT_ANNONCE');
   const a = DB.articles[articleFbKey];
   if (!a) return;
-  const total = contribs.reduce((s,c) => s + (c.montant||0), 0);
-  const montant_finance = Math.min(a.prix, total);
+
+  const totalConfirmed  = confirmedContribs.reduce((s, c) => s + (c.montant||0), 0);
+  const totalAnnounced  = announcedContribs.reduce((s, c) => s + (c.montant||0), 0);
+  const montant_finance = Math.min(a.prix, totalConfirmed);
+
   let statut = a.statut;
-  if (montant_finance >= a.prix && !['Réservé','Commandé','Reçu'].includes(a.statut)) statut = 'Financé';
-  else if (montant_finance > 0 && a.statut === 'Financé') statut = 'Participation en cours';
-  else if (montant_finance === 0 && a.statut === 'Participation en cours') statut = 'Disponible';
+  if (montant_finance >= a.prix && !['Réservé','Commandé','Reçu'].includes(statut)) {
+    statut = 'Financé';
+  } else if (montant_finance < a.prix && statut === 'Financé') {
+    statut = totalAnnounced > 0 ? 'Participation en cours' : 'Disponible';
+  } else if (montant_finance === 0 && totalAnnounced === 0 && statut === 'Participation en cours') {
+    statut = 'Disponible';
+  } else if ((totalAnnounced > 0 || totalConfirmed > 0) && statut === 'Disponible') {
+    statut = 'Participation en cours';
+  }
+
   await update(ref(db, `articles/${articleFbKey}`), { montant_finance, statut });
 }
 
