@@ -1117,6 +1117,7 @@
       <button class="admin-tab" onclick="showAdminTab('contributions')">Contributions</button>
       <button class="admin-tab" onclick="showAdminTab('articles')">Articles</button>
       <button class="admin-tab" onclick="showAdminTab('messages')">Messages</button>
+      <button class="admin-tab" onclick="showAdminTab('datalog')">🗂 Data Log</button>
       <button class="admin-tab" onclick="showAdminTab('parametres')">Paramètres</button>
     </div>
 
@@ -1173,6 +1174,13 @@
 
     <!-- MESSAGES -->
     <div id="admin-panel-messages" class="admin-panel">
+      <div class="section-title-row" style="margin-bottom:1rem;">
+        <div class="section-title" style="margin-bottom:0">Messages</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span style="font-size:12px;color:var(--taupe);">Trier :</span>
+          <button class="btn-sm btn-sm-neutral" id="msg-sort-btn" onclick="toggleMsgSort()">📅 Plus récent</button>
+        </div>
+      </div>
       <div class="admin-table-wrap">
         <table class="admin-table">
           <thead>
@@ -1181,10 +1189,36 @@
               <th>Message</th>
               <th>Date</th>
               <th>Visibilité</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="admin-messages-body"></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- DATA LOG -->
+    <div id="admin-panel-datalog" class="admin-panel">
+      <div class="section-title-row" style="margin-bottom:1rem;">
+        <div class="section-title" style="margin-bottom:0">🗂 Data Log — Sauvegarde</div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="copyDataLog()">📋 Copier</button>
+          <button class="btn btn-primary" onclick="downloadDataLog()">⬇ Télécharger JSON</button>
+        </div>
+      </div>
+      <div style="background:var(--deep-brown);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem;">
+        <div style="font-size:11px;color:var(--gold-light);margin-bottom:0.5rem;letter-spacing:0.1em;text-transform:uppercase;">Snapshot complet de la base de données</div>
+        <div style="font-size:11px;color:rgba(250,248,244,0.4);margin-bottom:1rem;">Exporté le <span id="datalog-date"></span> — Toutes les données Firebase en temps réel</div>
+        <pre id="datalog-content" style="color:var(--cream);font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all;max-height:500px;overflow-y:auto;margin:0;font-family:'DM Sans',monospace;"></pre>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--parchment);border-radius:var(--radius-lg);padding:1.25rem;">
+        <div style="font-size:13px;font-weight:500;color:var(--deep-brown);margin-bottom:0.5rem;">Comment restaurer ?</div>
+        <div style="font-size:12.5px;color:var(--taupe);line-height:1.7;">
+          1. Copiez ou téléchargez le JSON ci-dessus.<br>
+          2. Dans la console Firebase → Realtime Database → onglet <strong>Données</strong>.<br>
+          3. Cliquez sur les 3 points ⋮ à côté de la racine → <strong>Importer JSON</strong>.<br>
+          4. Collez votre fichier — toutes les données seront restaurées instantanément.
+        </div>
       </div>
     </div>
 
@@ -1333,7 +1367,7 @@
       <label class="form-label">Catégorie</label>
       <select class="form-select" id="af-categorie">
         <option value="Vêtements">Vêtements</option>
-        <option value="Mobilier">Mobilier</option>
+        <option value="Maison">Maison</option>
         <option value="Transport">Transport</option>
         <option value="Jouets">Jouets</option>
         <option value="Autres">Autres</option>
@@ -1608,7 +1642,7 @@ function initApp() {
 // ============================================================
 function renderCategoryNav() {
   const arts = articlesArr();
-  const cats = ['Tous', 'Vêtements', 'Mobilier', 'Transport', 'Jouets', 'Autres'];
+  const cats = ['Tous', 'Vêtements', 'Maison', 'Transport', 'Jouets', 'Autres'];
   const nav = document.getElementById('cat-nav');
   nav.innerHTML = cats.map(cat => {
     const count = cat === 'Tous' ? arts.length : arts.filter(a => a.categorie === cat).length;
@@ -1817,15 +1851,6 @@ function renderParticipateStep() {
         <label class="form-label">Votre nom et prénom(s) *</label>
         <input class="form-input" id="p-nom" placeholder="ex. Sophie Martin" value="${participateState.nom}">
         <div class="form-hint">Exemples : Sophie Martin · Thomas et Julie Durand · Famille Dupont</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Visibilité de votre nom</label>
-        <div class="choice-group">
-          <button class="choice-btn ${participateState.nameVisible ? 'selected' : ''}" 
-            onclick="setParticipateNameVisible(true)">👤 Visible sur la liste</button>
-          <button class="choice-btn ${!participateState.nameVisible ? 'selected' : ''}" 
-            onclick="setParticipateNameVisible(false)">🔒 Anonyme</button>
-        </div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('modal-participate')">Annuler</button>
@@ -2115,6 +2140,7 @@ function showAdminTab(tab) {
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('admin-panel-' + tab).classList.add('active');
   event.target.classList.add('active');
+  if (tab === 'datalog') renderDataLog();
 }
 window.showAdminTab = showAdminTab;
 
@@ -2396,30 +2422,52 @@ async function saveArticleForm() {
 window.saveArticleForm = saveArticleForm;
 
 // ── MESSAGES ADMIN ──────────────────────────────────────────
+let msgSortAsc = false; // default: newest first
+
+function toggleMsgSort() {
+  msgSortAsc = !msgSortAsc;
+  const btn = document.getElementById('msg-sort-btn');
+  if (btn) btn.textContent = msgSortAsc ? '📅 Plus ancien' : '📅 Plus récent';
+  renderAdminMessages();
+}
+window.toggleMsgSort = toggleMsgSort;
+
 function renderAdminMessages() {
-  const msgs = messagesArr();
+  let msgs = messagesArr(); // already sorted newest first by date
+  if (msgSortAsc) msgs = [...msgs].reverse();
+
   const tbody = document.getElementById('admin-messages-body');
   if (!msgs.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--taupe)">Aucun message</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--taupe)">Aucun message</td></tr>';
     return;
   }
   tbody.innerHTML = msgs.map(m => {
     const p = participantsArr().find(x => x._fbKey === m.participant_id);
-    const d = new Date(m.date).toLocaleDateString('fr-FR');
+    const d = new Date(m.date).toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
     return `
       <tr>
         <td style="font-weight:500;">${p ? p.nom_prenom : '—'}</td>
         <td style="font-style:italic;color:var(--warm-brown);">${m.texte}</td>
-        <td style="color:var(--taupe)">${d}</td>
+        <td style="color:var(--taupe);white-space:nowrap;">${d}</td>
         <td>
           <button class="btn-sm ${m.public !== false ? 'btn-sm-success' : 'btn-sm-neutral'}"
             onclick="toggleMessageVisibility('${m._fbKey}')">
             ${m.public !== false ? '🌍 Visible' : '🔒 Privé'}
           </button>
         </td>
+        <td>
+          <button class="btn-sm btn-sm-danger" onclick="deleteMessage('${m._fbKey}')">🗑 Supprimer</button>
+        </td>
       </tr>`;
   }).join('');
 }
+
+async function deleteMessage(fbKey) {
+  if (!confirm('Supprimer ce message ? Cette action est irréversible.')) return;
+  await remove(ref(db, `messages/${fbKey}`));
+  showToast('Message supprimé.');
+}
+window.deleteMessage = deleteMessage;
 
 async function toggleMessageVisibility(fbKey) {
   const m = DB.messages[fbKey];
@@ -2428,6 +2476,44 @@ async function toggleMessageVisibility(fbKey) {
   showToast(m.public === false ? 'Message rendu visible de tous.' : 'Message rendu privé.');
 }
 window.toggleMessageVisibility = toggleMessageVisibility;
+
+// ── DATA LOG ────────────────────────────────────────────────
+function renderDataLog() {
+  const snapshot = {
+    exportedAt: new Date().toISOString(),
+    params:        DB.params,
+    articles:      DB.articles,
+    contributions: DB.contributions,
+    participants:  DB.participants,
+    messages:      DB.messages,
+    activity:      DB.activity
+  };
+  const json = JSON.stringify(snapshot, null, 2);
+  const el = document.getElementById('datalog-content');
+  const dateEl = document.getElementById('datalog-date');
+  if (el) el.textContent = json;
+  if (dateEl) dateEl.textContent = new Date().toLocaleString('fr-FR');
+  return json;
+}
+
+function copyDataLog() {
+  const json = renderDataLog();
+  navigator.clipboard.writeText(json).then(() => showToast('Données copiées dans le presse-papier !'));
+}
+window.copyDataLog = copyDataLog;
+
+function downloadDataLog() {
+  const json = renderDataLog();
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `liste-naissance-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Sauvegarde téléchargée !');
+}
+window.downloadDataLog = downloadDataLog;
 
 // ── PARAMS ──────────────────────────────────────────────────
 function loadParams() {
