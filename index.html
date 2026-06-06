@@ -1021,6 +1021,75 @@
 
   /* NZ ARTICLE CARD */
   .nz-only .article-body { opacity: 0.9; }
+
+  /* CONTRIB FILTER BAR */
+  .contrib-filter-bar {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+  .contrib-filter-bar .form-input,
+  .contrib-filter-bar .form-select {
+    flex: 1;
+    min-width: 160px;
+    max-width: 220px;
+    padding: 0.5rem 0.75rem;
+    font-size: 13px;
+  }
+
+  /* SORTABLE TABLE HEADERS */
+  .sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .sortable:hover { color: var(--warm-brown); }
+  .sort-active { color: var(--gold) !important; }
+
+  /* STATUS PILLS — delivery */
+  .s-recu-a-remercier { background: rgba(196,147,122,0.18); color: #8B4A2A; }
+  .s-recu-remercie    { background: rgba(122,140,120,0.25); color: #3A5B38; }
+
+  /* ARTICLE DETAIL MODAL */
+  .article-detail-photo {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    margin-bottom: 1rem;
+    background: var(--cream-dark);
+  }
+  .article-detail-contributors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+  }
+
+  /* AUTOCOMPLETE */
+  .autocomplete-wrap { position: relative; }
+  .autocomplete-list {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0; right: 0;
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px var(--shadow-md);
+    z-index: 500;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .autocomplete-item {
+    padding: 0.55rem 0.9rem;
+    font-size: 14px;
+    color: var(--warm-brown);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .autocomplete-item:hover { background: var(--cream-dark); color: var(--deep-brown); }
 </style>
 </head>
 <body>
@@ -1130,15 +1199,28 @@
 
     <!-- CONTRIBUTIONS -->
     <div id="admin-panel-contributions" class="admin-panel">
+      <!-- Filter bar -->
+      <div class="contrib-filter-bar">
+        <input class="form-input" id="cf-search-nom" placeholder="🔍 Filtrer par nom…" oninput="renderAdminContribs()">
+        <input class="form-input" id="cf-search-article" placeholder="🔍 Filtrer par article…" oninput="renderAdminContribs()">
+        <select class="form-select" id="cf-filter-statut" onchange="renderAdminContribs()">
+          <option value="">Tous les statuts</option>
+          <option value="VIREMENT_ANNONCE">Annoncé</option>
+          <option value="VIREMENT_CONFIRME">Confirmé</option>
+          <option value="RECU_A_REMERCIER">Reçu — à remercier</option>
+          <option value="RECU_REMERCIE">Reçu — remercié</option>
+        </select>
+        <button class="btn-sm btn-sm-neutral" onclick="resetContribFilters()">✕ Réinitialiser</button>
+      </div>
       <div class="admin-table-wrap">
         <table class="admin-table" id="admin-contribs-table">
           <thead>
             <tr>
-              <th>Participant</th>
-              <th>Article</th>
-              <th>Montant</th>
-              <th>Statut</th>
-              <th>Date</th>
+              <th class="sortable" onclick="sortContribs('nom')">Participant <span id="sort-icon-nom">↕</span></th>
+              <th class="sortable" onclick="sortContribs('article')">Article <span id="sort-icon-article">↕</span></th>
+              <th class="sortable" onclick="sortContribs('montant')">Montant <span id="sort-icon-montant">↕</span></th>
+              <th class="sortable" onclick="sortContribs('statut')">Statut <span id="sort-icon-statut">↕</span></th>
+              <th class="sortable" onclick="sortContribs('date')">Date <span id="sort-icon-date">↕</span></th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -1426,6 +1508,16 @@
       <button class="btn btn-secondary" onclick="closeModal('modal-article-form')">Annuler</button>
       <button class="btn btn-primary" onclick="saveArticleForm()">Enregistrer</button>
     </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: ARTICLE DETAIL (ADMIN) -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="modal-article-detail">
+  <div class="modal" style="max-width:560px;">
+    <button class="modal-close" onclick="closeModal('modal-article-detail')">×</button>
+    <div id="article-detail-content"></div>
   </div>
 </div>
 
@@ -1849,8 +1941,12 @@ function renderParticipateStep() {
       <p class="modal-subtitle">${a.nom}</p>
       <div class="form-group">
         <label class="form-label">Votre nom et prénom(s) *</label>
-        <input class="form-input" id="p-nom" placeholder="ex. Sophie Martin" value="${participateState.nom}">
-        <div class="form-hint">Exemples : Sophie Martin · Thomas et Julie Durand · Famille Dupont</div>
+        <div class="autocomplete-wrap">
+          <input class="form-input" id="p-nom" placeholder="ex. Sophie Martin" value="${participateState.nom}"
+            oninput="showAutocomplete()" onkeydown="autocompleteKeydown(event)" autocomplete="off">
+          <div class="autocomplete-list" id="autocomplete-list" style="display:none;"></div>
+        </div>
+        <div class="form-hint">Tapez votre nom ou sélectionnez-le si vous avez déjà participé.</div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('modal-participate')">Annuler</button>
@@ -2173,39 +2269,242 @@ function renderAdminActivity() {
     : '<div class="empty-state"><p>Aucune activité pour l\'instant.</p></div>';
 }
 
-function renderAdminContribs() {
-  const contribs = contributionsArr();
-  const tbody    = document.getElementById('admin-contribs-body');
-  if (!contribs.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--taupe)">Aucune contribution</td></tr>';
-    return;
+// ============================================================
+// AUTOCOMPLETE — name field in participation flow
+// ============================================================
+function showAutocomplete() {
+  const input = document.getElementById('p-nom');
+  const list  = document.getElementById('autocomplete-list');
+  if (!input || !list) return;
+  const val = input.value.trim().toLowerCase();
+  const names = participantsArr().map(p => p.nom_prenom);
+  const matches = val.length === 0
+    ? names
+    : names.filter(n => n.toLowerCase().includes(val));
+  if (!matches.length) { list.style.display = 'none'; return; }
+  list.style.display = 'block';
+  list.innerHTML = matches.map(n =>
+    `<div class="autocomplete-item" onmousedown="selectAutocompleteName('${n.replace(/'/g,"\\'")}')">
+      ${n}
+    </div>`
+  ).join('');
+}
+window.showAutocomplete = showAutocomplete;
+
+function selectAutocompleteName(name) {
+  const input = document.getElementById('p-nom');
+  const list  = document.getElementById('autocomplete-list');
+  if (input) input.value = name;
+  if (list)  list.style.display = 'none';
+  participateState.nom = name;
+}
+window.selectAutocompleteName = selectAutocompleteName;
+
+function autocompleteKeydown(e) {
+  if (e.key === 'Escape') {
+    const list = document.getElementById('autocomplete-list');
+    if (list) list.style.display = 'none';
   }
-  tbody.innerHTML = contribs.map(c => {
+}
+window.autocompleteKeydown = autocompleteKeydown;
+
+// ============================================================
+// ARTICLE DETAIL MODAL (admin — click on article in contribs)
+// ============================================================
+function openArticleDetail(fbKey) {
+  const a = DB.articles[fbKey];
+  if (!a) return;
+
+  const confirme = a.montant_finance || 0;
+  const annonce  = contributionsArr()
+    .filter(c => c.article_id === fbKey && c.statut === 'VIREMENT_ANNONCE')
+    .reduce((s,c) => s + (c.montant||0), 0);
+  const totalVisible = Math.min(a.prix||0, confirme + annonce);
+  const pctConfirme  = a.prix > 0 ? Math.min(100, Math.round((confirme / a.prix)*100)) : 0;
+  const pctAnnonce   = a.prix > 0 ? Math.min(100-pctConfirme, Math.round((annonce / a.prix)*100)) : 0;
+
+  // All contributors (confirmed + announced)
+  const contribs = contributionsArr().filter(c => c.article_id === fbKey);
+  const pills = contribs.map(c => {
+    const p = participantsArr().find(x => x._fbKey === c.participant_id);
+    const name = c.nameVisible === false ? 'Anonyme' : (p ? p.nom_prenom : '—');
+    const cls  = c.statut === 'VIREMENT_CONFIRME' ? 'background:rgba(122,140,120,0.2);color:#3A5B38'
+                                                   : 'background:rgba(184,149,106,0.15);color:#8B6B40';
+    return `<span class="contributor-pill" style="${cls}">${name} — ${c.montant} ${a.devise}</span>`;
+  }).join('');
+
+  const hasLink = a.product_url && a.product_url !== '#';
+  document.getElementById('article-detail-content').innerHTML = `
+    ${a.photo_url
+      ? `<img src="${a.photo_url}" class="article-detail-photo" alt="${a.nom}"
+            onerror="this.style.display='none'">`
+      : `<div class="article-detail-photo" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">🧸</div>`}
+    <div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--taupe);margin-bottom:.3rem">${a.categorie} · ${a.pays}</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;margin-bottom:.25rem;">${a.nom}</h2>
+    <div style="font-size:13px;color:var(--taupe);margin-bottom:1rem;">${a.description||''}</div>
+    <div style="display:flex;align-items:baseline;gap:.5rem;margin-bottom:1rem;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;">${(a.prix||0).toLocaleString('fr-FR')} ${a.devise}</span>
+      <span style="font-size:11px;color:var(--taupe);">· Statut : <strong>${a.statut}</strong></span>
+    </div>
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--taupe);margin-bottom:.35rem;">
+        <span><strong style="color:var(--warm-brown)">${totalVisible} ${a.devise}</strong> / ${a.prix} ${a.devise}</span>
+        <span>${pctConfirme + pctAnnonce}%</span>
+      </div>
+      <div class="progress-bar-bg" style="display:flex;">
+        <div class="progress-bar-fill"   style="width:${pctConfirme}%"></div>
+        <div class="progress-bar-pending" style="width:${pctAnnonce}%"></div>
+      </div>
+      ${annonce > 0 ? `<div class="progress-pending-label">⏳ ${annonce} ${a.devise} en attente de confirmation</div>` : ''}
+    </div>
+    ${contribs.length ? `
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--taupe);margin-bottom:.5rem;">Contributeurs</div>
+      <div class="article-detail-contributors">${pills}</div>` : '<div style="font-size:13px;color:var(--taupe);font-style:italic;">Aucun contributeur pour l\'instant.</div>'}
+    ${hasLink ? `<div style="margin-top:1.25rem;"><a href="${a.product_url}" target="_blank" class="btn btn-outline">🔗 Voir le produit</a></div>` : ''}
+  `;
+  openModal('modal-article-detail');
+}
+window.openArticleDetail = openArticleDetail;
+
+// ============================================================
+// CONTRIBUTIONS — sort & filter state
+// ============================================================
+let contribSortKey = 'date';
+let contribSortAsc = false;
+
+function sortContribs(key) {
+  if (contribSortKey === key) {
+    contribSortAsc = !contribSortAsc;
+  } else {
+    contribSortKey = key;
+    contribSortAsc = key !== 'date'; // date defaults desc, others asc
+  }
+  renderAdminContribs();
+}
+window.sortContribs = sortContribs;
+
+function resetContribFilters() {
+  document.getElementById('cf-search-nom').value     = '';
+  document.getElementById('cf-search-article').value = '';
+  document.getElementById('cf-filter-statut').value  = '';
+  contribSortKey = 'date';
+  contribSortAsc = false;
+  renderAdminContribs();
+}
+window.resetContribFilters = resetContribFilters;
+
+function renderAdminContribs() {
+  let contribs = contributionsArr();
+
+  // Enrich with participant/article for sorting/filtering
+  const enriched = contribs.map(c => {
     const p = participantsArr().find(x => x._fbKey === c.participant_id);
     const a = articlesArr().find(x => x._fbKey === c.article_id);
-    const statusClass = {'EN_ATTENTE':'s-attente','VIREMENT_ANNONCE':'s-annonce','VIREMENT_CONFIRME':'s-confirme'}[c.statut]||'s-attente';
-    const statusLabel = {'EN_ATTENTE':'En attente','VIREMENT_ANNONCE':'Annoncé','VIREMENT_CONFIRME':'Confirmé'}[c.statut];
-    const remercieLabel = c.remercie ? '✓ Remercié' : 'À remercier';
-    const remercieClass = c.remercie ? 'btn-sm-success' : 'btn-sm-neutral';
-    const nameVis = c.nameVisible === false ? '🔒 Anonyme' : '🌍 Visible';
+    // Determine effective delivery status
+    let effectiveStatut = c.statut;
+    if (a && a.statut === 'Reçu' && c.statut === 'VIREMENT_CONFIRME') {
+      effectiveStatut = c.remercie ? 'RECU_REMERCIE' : 'RECU_A_REMERCIER';
+    }
+    return { ...c, _participant: p, _article: a, _effectiveStatut: effectiveStatut };
+  });
+
+  // Filter by nom
+  const nomFilter = (document.getElementById('cf-search-nom')||{}).value?.trim().toLowerCase() || '';
+  const artFilter = (document.getElementById('cf-search-article')||{}).value?.trim().toLowerCase() || '';
+  const statFilter = (document.getElementById('cf-filter-statut')||{}).value || '';
+
+  let filtered = enriched.filter(c => {
+    const nom = c._participant ? c._participant.nom_prenom.toLowerCase() : '';
+    const art = c._article ? c._article.nom.toLowerCase() : '';
+    if (nomFilter && !nom.includes(nomFilter)) return false;
+    if (artFilter && !art.includes(artFilter)) return false;
+    if (statFilter && c._effectiveStatut !== statFilter) return false;
+    return true;
+  });
+
+  // Sort
+  const sortIcons = ['nom','article','montant','statut','date'];
+  sortIcons.forEach(k => {
+    const el = document.getElementById('sort-icon-' + k);
+    if (el) el.textContent = contribSortKey === k ? (contribSortAsc ? '↑' : '↓') : '↕';
+    const th = el?.closest('th');
+    if (th) th.classList.toggle('sort-active', contribSortKey === k);
+  });
+
+  filtered.sort((a, b) => {
+    let va, vb;
+    switch (contribSortKey) {
+      case 'nom':     va = a._participant?.nom_prenom||''; vb = b._participant?.nom_prenom||''; break;
+      case 'article': va = a._article?.nom||'';           vb = b._article?.nom||'';           break;
+      case 'montant': va = a.montant||0;                  vb = b.montant||0;                  break;
+      case 'statut':  va = a._effectiveStatut||'';        vb = b._effectiveStatut||'';        break;
+      case 'date':
+      default:        va = a.date||'';                    vb = b.date||'';                    break;
+    }
+    if (va < vb) return contribSortAsc ? -1 : 1;
+    if (va > vb) return contribSortAsc ?  1 : -1;
+    return 0;
+  });
+
+  const tbody = document.getElementById('admin-contribs-body');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--taupe)">
+      ${enriched.length ? 'Aucun résultat pour ces filtres.' : 'Aucune contribution.'}</td></tr>`;
+    return;
+  }
+
+  const statusMeta = {
+    'EN_ATTENTE':        { cls: 's-attente',           label: 'En attente' },
+    'VIREMENT_ANNONCE':  { cls: 's-annonce',           label: 'Annoncé' },
+    'VIREMENT_CONFIRME': { cls: 's-confirme',          label: 'Confirmé' },
+    'RECU_A_REMERCIER':  { cls: 's-recu-a-remercier',  label: '📦 Reçu — à remercier' },
+    'RECU_REMERCIE':     { cls: 's-recu-remercie',     label: '✓ Reçu — remercié' }
+  };
+
+  tbody.innerHTML = filtered.map(c => {
+    const p = c._participant;
+    const a = c._article;
+    const es = c._effectiveStatut;
+    const sm = statusMeta[es] || statusMeta['EN_ATTENTE'];
+
+    const actionsHtml = (() => {
+      if (es === 'RECU_A_REMERCIER') return `
+        <button class="btn-sm btn-sm-success" onclick="marquerRemercie('${c._fbKey}')">✓ Marquer remercié</button>
+        <button class="btn-sm btn-sm-danger"  onclick="deleteContrib('${c._fbKey}')">🗑</button>`;
+      if (es === 'RECU_REMERCIE') return `
+        <span class="btn-sm btn-sm-success" style="cursor:default;">✓ Remercié</span>
+        <button class="btn-sm btn-sm-danger"  onclick="deleteContrib('${c._fbKey}')">🗑</button>`;
+      if (es === 'VIREMENT_CONFIRME') return `
+        <button class="btn-sm ${c.remercie ? 'btn-sm-success' : 'btn-sm-neutral'}" onclick="toggleRemerciementContrib('${c._fbKey}')">${c.remercie ? '✓ Remercié' : 'À remercier'}</button>
+        <button class="btn-sm btn-sm-danger"  onclick="deleteContrib('${c._fbKey}')">🗑</button>`;
+      return `
+        <button class="btn-sm btn-sm-neutral" onclick="confirmerVirement('${c._fbKey}')">Confirmer à remercier</button>
+        <button class="btn-sm btn-sm-success" onclick="confirmerEtRemercier('${c._fbKey}')">Confirmer &amp; Remercier</button>
+        <button class="btn-sm btn-sm-danger"  onclick="deleteContrib('${c._fbKey}')">🗑</button>`;
+    })();
+
     return `
       <tr>
-        <td>${p ? p.nom_prenom : '—'}</td>
-        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a ? a.nom : '—'}</td>
-        <td style="font-weight:500;">${c.montant} ${a ? a.devise : '€'}</td>
-        <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-        <td><span style="font-size:11px;color:var(--taupe)">${nameVis}</span></td>
-        <td style="color:var(--taupe)">${c.date||''}</td>
-        <td style="display:flex;gap:4px;flex-wrap:wrap;">
-          ${c.statut !== 'VIREMENT_CONFIRME'
-            ? `<button class="btn-sm btn-sm-neutral"  onclick="confirmerVirement('${c._fbKey}')">Confirmer à remercier</button>
-               <button class="btn-sm btn-sm-success"  onclick="confirmerEtRemercier('${c._fbKey}')">Confirmer &amp; Remercier</button>`
-            : `<button class="btn-sm ${remercieClass}" onclick="toggleRemerciementContrib('${c._fbKey}')">${remercieLabel}</button>`}
-          <button class="btn-sm btn-sm-danger" onclick="deleteContrib('${c._fbKey}')">🗑</button>
+        <td style="font-weight:500;">${p ? p.nom_prenom : '—'}</td>
+        <td>
+          <button class="btn-sm btn-sm-neutral" style="text-align:left;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+            onclick="openArticleDetail('${c.article_id}')" title="${a ? a.nom : ''}">
+            ${a ? a.nom : '—'}
+          </button>
         </td>
+        <td style="font-weight:500;white-space:nowrap;">${c.montant} ${a ? a.devise : '€'}</td>
+        <td><span class="status-pill ${sm.cls}">${sm.label}</span></td>
+        <td style="color:var(--taupe);white-space:nowrap;">${c.date||''}</td>
+        <td style="display:flex;gap:4px;flex-wrap:wrap;">${actionsHtml}</td>
       </tr>`;
   }).join('');
 }
+
+async function marquerRemercie(fbKey) {
+  await update(ref(db, `contributions/${fbKey}`), { remercie: true });
+  showToast('Marqué comme remercié ✓');
+}
+window.marquerRemercie = marquerRemercie;
 
 async function confirmerVirement(fbKey) {
   const c = DB.contributions[fbKey];
