@@ -1135,8 +1135,21 @@
     <div class="hero-pretitle">2026</div>
     <h1 class="hero-title">Fabien Gonidec<br>&amp; Cécile Henson</h1>
     <div class="hero-subtitle">Liste de naissance</div>
-    <p class="hero-message">Merci de nous accompagner dans cette belle aventure.</p>
+    <p class="hero-message" id="hero-message-text">Merci de nous accompagner dans cette belle aventure.</p>
   </section>
+
+  <!-- HOW TO PARTICIPATE -->
+  <div style="background:var(--white);border-bottom:1px solid var(--parchment);">
+    <div style="max-width:1140px;margin:0 auto;padding:0 2rem;">
+      <details style="padding:1rem 0;">
+        <summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--warm-brown);letter-spacing:0.04em;list-style:none;display:flex;align-items:center;gap:0.5rem;user-select:none;">
+          <span style="font-size:1rem;">💛</span> Comment participer ?
+          <span style="margin-left:auto;font-size:11px;color:var(--taupe);">Cliquez pour voir</span>
+        </summary>
+        <div id="how-to-content" style="padding:1rem 0 0.5rem;font-size:13.5px;color:var(--warm-brown);line-height:1.8;"></div>
+      </details>
+    </div>
+  </div>
 
   <!-- CATEGORY NAV -->
   <nav class="category-nav">
@@ -1219,6 +1232,7 @@
               <th class="sortable" onclick="sortContribs('nom')">Participant <span id="sort-icon-nom">↕</span></th>
               <th class="sortable" onclick="sortContribs('article')">Article <span id="sort-icon-article">↕</span></th>
               <th class="sortable" onclick="sortContribs('montant')">Montant <span id="sort-icon-montant">↕</span></th>
+              <th>Référence</th>
               <th class="sortable" onclick="sortContribs('statut')">Statut <span id="sort-icon-statut">↕</span></th>
               <th class="sortable" onclick="sortContribs('date')">Date <span id="sort-icon-date">↕</span></th>
               <th>Actions</th>
@@ -1345,9 +1359,40 @@
             <div class="form-hint">Ex: 0.52 (1 NZD = 0.52 EUR)</div>
           </div>
         </div>
+        <div class="params-section" style="grid-column:1/-1;">
+          <h3>Textes de la page d'accueil</h3>
+          <div class="form-group">
+            <label class="form-label">Message principal (sous le titre)</label>
+            <textarea class="form-textarea" id="param-hero-message" style="min-height:120px;"></textarea>
+            <div class="form-hint">Texte affiché sous "Liste de naissance" sur la page d'accueil.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Texte "Comment participer ?"</label>
+            <textarea class="form-textarea" id="param-how-to" style="min-height:160px;"></textarea>
+            <div class="form-hint">Retours à la ligne (Entrée) respectés. Décrivez les étapes de participation.</div>
+          </div>
+        </div>
       </div>
       <div style="margin-top:1.5rem; display:flex; gap:0.75rem;">
         <button class="btn btn-primary" onclick="saveParams()">Enregistrer les paramètres</button>
+      </div>
+
+      <!-- GESTION PARTICIPANTS / AUTOCOMPLETE -->
+      <div style="margin-top:2.5rem;">
+        <div class="section-title" style="margin-bottom:1rem;">Noms enregistrés (autocomplétion)</div>
+        <p style="font-size:13px;color:var(--taupe);margin-bottom:1rem;">Ces noms apparaissent dans la suggestion lors d'une participation. Supprimez un nom pour le retirer de l'autocomplétion.</p>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Contributions</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-participants-body"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -1452,6 +1497,7 @@
         <option value="Maison">Maison</option>
         <option value="Transport">Transport</option>
         <option value="Jouets">Jouets</option>
+        <option value="Cagnotte">Cagnotte</option>
         <option value="Autres">Autres</option>
       </select>
     </div>
@@ -1577,7 +1623,9 @@ let DB = {
     iban: '',
     bic: '',
     msg_confirmation: 'Merci beaucoup pour votre participation, à très bientôt ❤️',
-    taux: 0.52
+    taux: 0.52,
+    hero_message: 'On attendait ce moment depuis longtemps, et maintenant que ça y est, on réalise encore à peine ! Notre petite famille va s\'agrandir et vous en faites partie — c\'est tout ce qui compte. Cette liste, c\'est avant tout une invitation à choisir ce qui vous touche, pas une liste de courses. Même la plus petite contribution nous ira droit au cœur. Comme on vit à l\'autre bout du monde, on a regroupé tout sur un seul compte pour simplifier les envois et les commandes groupées — merci de votre compréhension et de votre générosité.',
+    how_to_text: '1. Parcourez la liste et choisissez un article qui vous plaît.\n2. Cliquez sur "Participer" ou "Acheter entièrement".\n3. Indiquez votre nom et le montant souhaité.\n4. Effectuez un virement bancaire vers le compte indiqué en ajoutant la référence personnalisée affichée à l\'écran.\n5. Confirmez que le virement a été effectué — on s\'occupera du reste !\n\nPour les articles NZ 🇳🇿 : les prix sont en dollars néo-zélandais (NZD). La conversion EUR est donnée à titre indicatif.\nPour les articles France 🇫🇷 : nous passerons des commandes groupées pour optimiser les frais de port.'
   },
   articles:      {},
   contributions: {},
@@ -1606,6 +1654,13 @@ window.setParticipateMessageVisible = setParticipateMessageVisible;
 get(R.params).then(snap => {
   if (!snap.exists()) {
     set(R.params, DB.params);
+  } else {
+    // Patch missing keys on existing installs without overwriting everything
+    const existing = snap.val();
+    const patches = {};
+    if (!existing.hero_message) patches.hero_message = DB.params.hero_message;
+    if (!existing.how_to_text)  patches.how_to_text  = DB.params.how_to_text;
+    if (Object.keys(patches).length) update(R.params, patches);
   }
 });
 
@@ -1615,7 +1670,11 @@ get(R.params).then(snap => {
 // ============================================================
 function listenAll() {
   onValue(R.params, snap => {
-    if (snap.exists()) DB.params = snap.val();
+    if (snap.exists()) {
+      DB.params = snap.val();
+      if (currentScreen === 'app') renderHeroTexts();
+      if (currentScreen === 'admin') loadParams();
+    }
   });
 
   onValue(R.articles, snap => {
@@ -1632,7 +1691,7 @@ function listenAll() {
 
   onValue(R.participants, snap => {
     DB.participants = snap.exists() ? snap.val() : {};
-    if (currentScreen === 'admin') { renderAdminContribs(); renderAdminMessages(); }
+    if (currentScreen === 'admin') { renderAdminContribs(); renderAdminMessages(); renderAdminParticipants(); }
   });
 
   onValue(R.messages, snap => {
@@ -1727,14 +1786,23 @@ function initApp() {
   renderSummary();
   renderArticles();
   renderMessages();
+  renderHeroTexts();
 }
+
+function renderHeroTexts() {
+  const heroEl = document.getElementById('hero-message-text');
+  const howEl  = document.getElementById('how-to-content');
+  if (heroEl) heroEl.textContent = DB.params.hero_message || '';
+  if (howEl)  howEl.innerHTML = (DB.params.how_to_text || '').replace(/\n/g, '<br>');
+}
+window.renderHeroTexts = renderHeroTexts;
 
 // ============================================================
 // CATEGORY NAV
 // ============================================================
 function renderCategoryNav() {
   const arts = articlesArr();
-  const cats = ['Tous', 'Vêtements', 'Maison', 'Transport', 'Jouets', 'Autres'];
+  const cats = ['Tous', 'Vêtements', 'Maison', 'Transport', 'Jouets', 'Cagnotte', 'Autres'];
   const nav = document.getElementById('cat-nav');
   nav.innerHTML = cats.map(cat => {
     const count = cat === 'Tous' ? arts.length : arts.filter(a => a.categorie === cat).length;
@@ -1911,11 +1979,14 @@ function openParticipate(fbKey, buyAll) {
   const a = { ...DB.articles[fbKey], _fbKey: fbKey };
   if (!a) return;
   const restant = Math.max(0, a.prix - (a.montant_finance||0));
+  // Generate unique virement reference: FGCH + 6 uppercase alphanum chars
+  const ref6 = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6).padEnd(6,'X');
   participateState = {
     articleFbKey: fbKey, buyAll, step: 1,
     nom: '', montant: buyAll ? restant : 0,
     wantMessage: null, message: '',
-    nameVisible: true, messageVisible: true
+    nameVisible: true, messageVisible: true,
+    virementRef: 'FGCH' + ref6
   };
   renderParticipateStep();
   openModal('modal-participate');
@@ -1974,6 +2045,7 @@ function renderParticipateStep() {
         <button class="btn btn-primary" onclick="participateNext()">Suivant →</button>
       </div>`;
   } else if (s === 3) {
+    const ref = participateState.virementRef || 'FGCHXXXXXX';
     content.innerHTML = `
       <h2>Coordonnées bancaires</h2>
       <p class="modal-subtitle">Effectuez un virement vers le compte suivant.</p>
@@ -1981,9 +2053,21 @@ function renderParticipateStep() {
         onclick="document.getElementById('iban-reveal').style.display='block';this.style.display='none'">Afficher les coordonnées bancaires</button>
       <div id="iban-reveal" style="display:none">
         <div class="iban-box">
+          <div class="iban-row"><span class="iban-key">Banque</span><span class="iban-val">Crédit Agricole</span></div>
           <div class="iban-row"><span class="iban-key">Titulaire</span><span class="iban-val">${DB.params.titulaire||''}</span></div>
           <div class="iban-row"><span class="iban-key">IBAN</span><span class="iban-val">${DB.params.iban||''}</span></div>
           <div class="iban-row"><span class="iban-key">BIC</span><span class="iban-val">${DB.params.bic||''}</span></div>
+        </div>
+        <div style="background:rgba(184,149,106,0.1);border:1px solid rgba(184,149,106,0.3);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin:0.75rem 0;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--taupe);margin-bottom:0.35rem;">Référence à ajouter au virement</div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-family:'DM Sans',monospace;font-size:1.1rem;font-weight:600;color:var(--deep-brown);letter-spacing:0.08em;">${ref}</span>
+            <button onclick="navigator.clipboard.writeText('${ref}').then(()=>showToast('Référence copiée !'))"
+              style="background:var(--gold);border:none;border-radius:var(--radius);padding:0.3rem 0.65rem;font-size:11px;font-weight:500;cursor:pointer;color:var(--deep-brown);">
+              Copier
+            </button>
+          </div>
+          <div style="font-size:12px;color:var(--taupe);margin-top:0.4rem;">Merci d'ajouter cette référence dans le libellé de votre virement pour que nous puissions l'identifier facilement.</div>
         </div>
         <div class="form-hint" style="margin-top:0.5rem;">Montant à virer : <strong>${participateState.montant} ${a.devise}</strong></div>
       </div>
@@ -2091,7 +2175,8 @@ async function saveParticipation() {
     montant:       participateState.montant,
     statut:        'VIREMENT_ANNONCE',
     date:          new Date().toISOString().split('T')[0],
-    nameVisible:   participateState.nameVisible !== false
+    nameVisible:   participateState.nameVisible !== false,
+    virementRef:   participateState.virementRef || ''
   });
 
   // Add message
@@ -2228,6 +2313,7 @@ function initAdmin() {
   renderAdminContribs();
   renderAdminArticles();
   renderAdminMessages();
+  renderAdminParticipants();
   loadParams();
 }
 
@@ -2448,7 +2534,7 @@ function renderAdminContribs() {
 
   const tbody = document.getElementById('admin-contribs-body');
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--taupe)">
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--taupe)">
       ${enriched.length ? 'Aucun résultat pour ces filtres.' : 'Aucune contribution.'}</td></tr>`;
     return;
   }
@@ -2493,6 +2579,7 @@ function renderAdminContribs() {
           </button>
         </td>
         <td style="font-weight:500;white-space:nowrap;">${c.montant} ${a ? a.devise : '€'}</td>
+        <td style="font-family:monospace;font-size:12px;color:var(--warm-brown);white-space:nowrap;">${c.virementRef || '—'}</td>
         <td><span class="status-pill ${sm.cls}">${sm.label}</span></td>
         <td style="color:var(--taupe);white-space:nowrap;">${c.date||''}</td>
         <td style="display:flex;gap:4px;flex-wrap:wrap;">${actionsHtml}</td>
@@ -2814,6 +2901,42 @@ function downloadDataLog() {
 }
 window.downloadDataLog = downloadDataLog;
 
+// ── PARTICIPANTS (autocomplete management) ───────────────────
+function renderAdminParticipants() {
+  const tbody = document.getElementById('admin-participants-body');
+  if (!tbody) return;
+  const parts = participantsArr();
+  if (!parts.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--taupe)">Aucun participant enregistré.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = parts.map(p => {
+    const contribCount = contributionsArr().filter(c => c.participant_id === p._fbKey).length;
+    return `
+      <tr>
+        <td style="font-weight:500;">${p.nom_prenom}</td>
+        <td style="color:var(--taupe);">${contribCount} contribution${contribCount !== 1 ? 's' : ''}</td>
+        <td>
+          <button class="btn-sm btn-sm-danger" onclick="deleteParticipant('${p._fbKey}', '${p.nom_prenom.replace(/'/g,"\\'")}')">
+            🗑 Supprimer
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+async function deleteParticipant(fbKey, nom) {
+  const contribCount = contributionsArr().filter(c => c.participant_id === fbKey).length;
+  let confirmMsg = `Supprimer "${nom}" de l'autocomplétion ?`;
+  if (contribCount > 0) {
+    confirmMsg += `\n\nAttention : ce participant a ${contribCount} contribution(s) associée(s). Le nom n'apparaîtra plus dans l'autocomplétion mais les contributions seront conservées.`;
+  }
+  if (!confirm(confirmMsg)) return;
+  await remove(ref(db, `participants/${fbKey}`));
+  showToast(`"${nom}" supprimé de l'autocomplétion.`);
+}
+window.deleteParticipant = deleteParticipant;
+
 // ── PARAMS ──────────────────────────────────────────────────
 function loadParams() {
   const p = DB.params;
@@ -2824,9 +2947,15 @@ function loadParams() {
   document.getElementById('param-bic').value                = p.bic||'';
   document.getElementById('param-msg-confirmation').value   = p.msg_confirmation||'';
   document.getElementById('param-taux').value               = p.taux||0.52;
+  const heroEl = document.getElementById('param-hero-message');
+  const howEl  = document.getElementById('param-how-to');
+  if (heroEl) heroEl.value = p.hero_message||'';
+  if (howEl)  howEl.value  = p.how_to_text||'';
 }
 
 async function saveParams() {
+  const heroEl = document.getElementById('param-hero-message');
+  const howEl  = document.getElementById('param-how-to');
   const updates = {
     pwd_famille:      document.getElementById('param-pwd-famille').value || DB.params.pwd_famille,
     pwd_admin:        document.getElementById('param-pwd-admin').value   || DB.params.pwd_admin,
@@ -2834,7 +2963,9 @@ async function saveParams() {
     iban:             document.getElementById('param-iban').value,
     bic:              document.getElementById('param-bic').value,
     msg_confirmation: document.getElementById('param-msg-confirmation').value,
-    taux:             parseFloat(document.getElementById('param-taux').value) || 0.52
+    taux:             parseFloat(document.getElementById('param-taux').value) || 0.52,
+    hero_message:     heroEl ? heroEl.value : (DB.params.hero_message||''),
+    how_to_text:      howEl  ? howEl.value  : (DB.params.how_to_text||'')
   };
   await set(R.params, updates);
   showToast('Paramètres enregistrés avec succès.');
